@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
+using SD_340_W22SD_Final_Project_Group6.BLL;
+using SD_340_W22SD_Final_Project_Group6.DAL;
 
 namespace SD_340_W22SD_Final_Project_Group6.Controllers
 {
@@ -16,10 +18,11 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     public class TicketsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+        private TicketBusinessLogic _ticketBLL { get; set; }
         public TicketsController(ApplicationDbContext context)
         {
             _context = context;
+            _ticketBLL = new TicketBusinessLogic(new TicketRepository(context));
         }
 
         // GET: Tickets
