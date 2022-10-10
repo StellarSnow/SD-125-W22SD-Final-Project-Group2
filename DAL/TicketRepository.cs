@@ -1,4 +1,5 @@
-﻿using SD_340_W22SD_Final_Project_Group6.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 
 namespace SD_340_W22SD_Final_Project_Group6.DAL
@@ -17,6 +18,18 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
             throw new NotImplementedException();
         }
 
+        public Ticket Get(int id)
+        {
+            return _db.Tickets
+                .Include(t => t.Project)
+                .Include(t => t.TicketWatchers)
+                .ThenInclude(tw => tw.Watcher)
+                .Include(u => u.Owner)
+                .Include(t => t.Comments)
+                .ThenInclude(c => c.CreatedBy)
+                .First(m => m.Id == id);
+        }
+
         public void Delete(Ticket entity)
         {
             throw new NotImplementedException();
@@ -28,11 +41,6 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
         }
 
         public bool Exists()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Ticket Get(int id)
         {
             throw new NotImplementedException();
         }
@@ -61,5 +69,6 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
         {
             throw new NotImplementedException();
         }
+
     }
 }

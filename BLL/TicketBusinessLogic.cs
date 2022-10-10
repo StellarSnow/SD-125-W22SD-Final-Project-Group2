@@ -11,5 +11,10 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         {
             _repo = repo;
         }
+
+        public Ticket Get(int id)
+        {
+            return _repo.Get(id);
+        }
     }
 }
