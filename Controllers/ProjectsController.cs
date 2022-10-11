@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using SD_340_W22SD_Final_Project_Group6.BLL;
+using SD_340_W22SD_Final_Project_Group6.DAL;
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using X.PagedList;
@@ -20,12 +22,15 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _users;
+        private readonly ProjectBusinessLogicLayer _projectBusinessLogicLayer;
 
         public ProjectsController(ApplicationDbContext context, UserManager<ApplicationUser> users)
         {
             _context = context;
             _users = users;
+            _projectBusinessLogicLayer = new ProjectBusinessLogicLayer(new ProjectRepository(_context));
         }
+
         // GET: Projects
         [Authorize]
         public async Task<IActionResult> Index(string? sortOrder, int? page, bool? sort, string? userId)
@@ -44,7 +49,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 case "Priority":
                     if (sort == true)
                     {
-                        SortedProjs =
+                        SortedProjs = _projectBusinessLogicLayer.GetAll();
+
                         await _context.Projects
                         .Include(p => p.CreatedBy)
                         .Include(p => p.AssignedTo)
@@ -55,7 +61,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                     }
                     else
                     {
-                        SortedProjs =
+                        SortedProjs = _projectBusinessLogicLayer.GetAll();
+
                         await _context.Projects
                         .Include(p => p.CreatedBy)
                         .Include(p => p.AssignedTo)
