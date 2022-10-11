@@ -20,14 +20,19 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
 
         public Ticket Get(int id)
         {
-            return _db.Tickets
+            throw new NotImplementedException();
+        }
+
+        public async Task<Ticket> GetAsync(int id)
+        {
+            return await _db.Tickets
                 .Include(t => t.Project)
                 .Include(t => t.TicketWatchers)
                 .ThenInclude(tw => tw.Watcher)
                 .Include(u => u.Owner)
                 .Include(t => t.Comments)
                 .ThenInclude(c => c.CreatedBy)
-                .First(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
         }
 
         public void Delete(Ticket entity)
@@ -69,6 +74,5 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
         {
             throw new NotImplementedException();
         }
-
     }
 }

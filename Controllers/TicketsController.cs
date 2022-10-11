@@ -41,9 +41,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 return NotFound();
             }
 
-            //Ticket ticket = await _context.Tickets.Include(t => t.Project).Include(t => t.TicketWatchers).ThenInclude(tw => tw.Watcher).Include(u => u.Owner).Include(t => t.Comments).ThenInclude(c => c.CreatedBy)
-            //    .FirstOrDefaultAsync(m => m.Id == id);
-            Ticket ticket = _ticketBLL.Get((int)id);
+            Ticket ticket = await _ticketBLL.GetAsync((int)id);
 
             List<SelectListItem> currUsers = new List<SelectListItem>();
             ticket.Project.AssignedTo.ToList().ForEach(t =>

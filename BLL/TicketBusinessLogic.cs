@@ -12,9 +12,9 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             _repo = repo;
         }
 
-        public Ticket Get(int id)
+        public async Task<Ticket> GetAsync(int id)
         {
-            return _repo.Get(id);
+            return await _repo.GetAsync(id);
         }
     }
 }
