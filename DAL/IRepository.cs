@@ -15,7 +15,7 @@
 
         ICollection<T> GetList(Func<T, bool> predicate);
 
-        T Udate(T entity);
+        T Update(T entity);
 
         void Delete(T entity);
 
