@@ -67,7 +67,7 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
 
         public void Save()
         {
-            throw new NotImplementedException();
+            _db.SaveChanges();
         }
 
         public Ticket Udate(Ticket entity)
