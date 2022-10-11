@@ -7,6 +7,8 @@
 
         T Get(int id);
 
+        Task<T> GetAsync(int id);
+
         T Get(Func<T, bool> predicate);
 
         ICollection<T> GetAll();
