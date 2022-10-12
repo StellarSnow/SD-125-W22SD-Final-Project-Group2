@@ -20,7 +20,7 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
 
         public Ticket Get(int id)
         {
-            return _db.Tickets.FirstOrDefault(t => t.Id == id);
+            return _db.Tickets.Find(id);
         }
 
         public async Task<Ticket> GetAsync(int id)
