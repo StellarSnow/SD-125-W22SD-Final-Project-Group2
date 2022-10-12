@@ -271,7 +271,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                     
                     string userName = User.Identity.Name;
                     ApplicationUser user = _context.Users.First(u => u.UserName == userName);
-                    Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+                    Ticket ticket = _ticketBLL.GetTicket(id);
                     TicketWatcher currTickWatch = await _context.TicketWatchers.FirstAsync(tw => tw.Ticket.Equals(ticket) && tw.Watcher.Equals(user));
                     _context.TicketWatchers.Remove(currTickWatch);
                     ticket.TicketWatchers.Remove(currTickWatch);
