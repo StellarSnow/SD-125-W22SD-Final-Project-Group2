@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
@@ -27,6 +28,23 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             viewModel.allUsers = allUsers;
 
             return viewModel;
+        }
+
+        public async Task<object[]> GetAllUsers()
+        {
+            List<ApplicationUser> allUsers = await UserManager.Users.ToListAsync();
+
+            List<SelectListItem> users = new List<SelectListItem>();
+            
+            allUsers.ForEach(u =>
+            {
+                users.Add(new SelectListItem(u.UserName, u.Id.ToString()));
+            });
+
+            return new object[]
+            {
+                allUsers, users
+            };
         }
     }
 }

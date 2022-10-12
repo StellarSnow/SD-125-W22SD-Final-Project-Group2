@@ -30,14 +30,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
 
         public async Task<IActionResult> ReassignRoleAsync()
         {
-            List<ApplicationUser> allUsers = _context.Users.ToList();
-
-            List<SelectListItem> users = new List<SelectListItem>();
-            allUsers.ForEach(u =>
-            {
-                users.Add(new SelectListItem(u.UserName, u.Id.ToString()));
-            });
-            ViewBag.Users = users;
+            List<ApplicationUser> allUsers = (List<ApplicationUser>)(await BLL.GetAllUsers())[0];
+            ViewBag.Users = (List<SelectListItem>)(await BLL.GetAllUsers())[1];
 
             return View(allUsers);
         }
