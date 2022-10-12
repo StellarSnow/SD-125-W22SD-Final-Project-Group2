@@ -242,7 +242,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                     TicketWatcher newTickWatch = new TicketWatcher();
                     string userName = User.Identity.Name;
                     ApplicationUser user = _context.Users.First(u => u.UserName == userName);
-                    Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+                    Ticket ticket = _ticketBLL.GetTicket(id);
 
                     newTickWatch.Ticket = ticket;
                     newTickWatch.Watcher = user;
