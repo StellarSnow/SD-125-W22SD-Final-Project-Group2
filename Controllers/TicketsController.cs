@@ -295,7 +295,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 try
                 {
-                    Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+                    Ticket ticket = _ticketBLL.GetTicket(id);
                     ticket.Completed = true;
 
                     await _context.SaveChangesAsync();
