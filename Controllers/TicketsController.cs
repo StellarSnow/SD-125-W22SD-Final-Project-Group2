@@ -103,13 +103,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Tickets == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets.Include(t => t.Owner).FirstAsync(t => t.Id == id);
-      
+            Ticket ticket = _ticketBLL.GetTicket((int)id);
+
             if (ticket == null)
             {
                 return NotFound();
