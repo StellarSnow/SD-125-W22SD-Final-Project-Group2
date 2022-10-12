@@ -191,7 +191,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                     Comment newComment = new Comment();
                     string userName = User.Identity.Name;
                     ApplicationUser user = _context.Users.First(u => u.UserName == userName);
-                    Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == TaskId);
+                    Ticket ticket = _ticketBLL.GetTicket(TaskId);
 
                     newComment.CreatedBy = user;
                     newComment.Description = TaskText;
@@ -219,7 +219,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 try
                 {
-                    Ticket ticket = _ticketBLL.Get(id);
+                    Ticket ticket = _ticketBLL.GetTicket(id);
                     ticket.RequiredHours = hrs;
                     _ticketBLL.Save();
                     return RedirectToAction("Details", new { id });
@@ -242,7 +242,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                     TicketWatcher newTickWatch = new TicketWatcher();
                     string userName = User.Identity.Name;
                     ApplicationUser user = _context.Users.First(u => u.UserName == userName);
-                    Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+                    Ticket ticket = _ticketBLL.GetTicket(id);
 
                     newTickWatch.Ticket = ticket;
                     newTickWatch.Watcher = user;
@@ -271,7 +271,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                     
                     string userName = User.Identity.Name;
                     ApplicationUser user = _context.Users.First(u => u.UserName == userName);
-                    Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+                    Ticket ticket = _ticketBLL.GetTicket(id);
                     TicketWatcher currTickWatch = await _context.TicketWatchers.FirstAsync(tw => tw.Ticket.Equals(ticket) && tw.Watcher.Equals(user));
                     _context.TicketWatchers.Remove(currTickWatch);
                     ticket.TicketWatchers.Remove(currTickWatch);
@@ -295,7 +295,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 try
                 {
-                    Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+                    Ticket ticket = _ticketBLL.GetTicket(id);
                     ticket.Completed = true;
 
                     await _context.SaveChangesAsync();
@@ -316,7 +316,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 try
                 {
-                    Ticket ticket = _context.Tickets.FirstOrDefault(t => t.Id == id);
+                    Ticket ticket = _ticketBLL.GetTicket(id);
                     ticket.Completed = false;
 
                     await _context.SaveChangesAsync();
