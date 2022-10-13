@@ -46,5 +46,21 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
                 allUsers, users
             };
         }
+
+        public async Task ReassignRole(string role, string userId)
+        {
+            ApplicationUser user = UserManager.Users.First(u => u.Id == userId);
+            ICollection<string> roleUser = await UserManager.GetRolesAsync(user);
+            
+            if (roleUser.Count == 0)
+            {
+                await UserManager.AddToRoleAsync(user, role);
+            }
+            else
+            {
+                await UserManager.RemoveFromRoleAsync(user, roleUser.First());
+                await UserManager.AddToRoleAsync(user, role);
+            }
+        }
     }
 }
