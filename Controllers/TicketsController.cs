@@ -221,7 +221,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 {
                     Ticket ticket = _ticketBLL.GetTicket(id);
                     ticket.RequiredHours = hrs;
-                    _ticketBLL.Save();
+                    _ticketBLL.SaveTicket();
                     return RedirectToAction("Details", new { id });
 
                 }
