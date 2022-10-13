@@ -109,5 +109,10 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
         {
             throw new NotImplementedException();
         }
+
+        public Project Get(string id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
