@@ -2,111 +2,112 @@
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 
-namespace SD_340_W22SD_Final_Project_Group6.DAL;
-
-public class ProjectRepository : IRepository<Project>
+namespace SD_340_W22SD_Final_Project_Group6.DAL
 {
-
-    private readonly ApplicationDbContext _context;
-
-    public ProjectRepository(ApplicationDbContext context)
+    public class ProjectRepository : IRepository<Project>
     {
-        _context = context;
-    }
 
-    public void Add(Project entity)
-    {
-        _context.Add(entity);
-    }
+        private ApplicationDbContext _context;
 
-    public Project Get(int id)
-    {
-        var project = _context
-            .Projects
-            .Include(p => p.Tickets)
-            .ThenInclude(t => t.Comments)
-            .Include(p => p.AssignedTo)
-            .ThenInclude(at => at.ApplicationUser)
-            .Include(p => p.CreatedBy)
-            .Single(p => p.Id == id);
-        return project;
-    }
+        public ProjectRepository(ApplicationDbContext context)
+        {
+            _context = context;
+        }
 
-    public Project Get(Func<Project, bool> predicate)
-    {
-        var project = _context
-            .Projects
-            .Include(p => p.Tickets)
-            .ThenInclude(t => t.Comments)
-            .Include(p => p.AssignedTo)
-            .ThenInclude(at => at.ApplicationUser)
-            .Include(p => p.CreatedBy).Single(predicate);
-        return project;
-    }
+        public void Add(Project entity)
+        {
+            _context.Add(entity);
+        }
 
-    public ICollection<Project> GetAll()
-    {
-        var projects = _context
-            .Projects
-            .Include(p => p.Tickets)
-            .ThenInclude(t => t.Comments)
-            .Include(p => p.AssignedTo)
-            .ThenInclude(at => at.ApplicationUser)
-            .Include(p => p.CreatedBy)
-            .ToList();
-        return projects;
-    }
+        public Project Get(int id)
+        {
+            var project = _context
+                .Projects
+                .Include(p => p.Tickets)
+                .ThenInclude(t => t.Comments)
+                .Include(p => p.AssignedTo)
+                .ThenInclude(at => at.ApplicationUser)
+                .Include(p => p.CreatedBy)
+                .Single(p => p.Id == id);
+            return project;
+        }
 
-    public ICollection<Project> GetList(Func<Project, bool> predicate)
-    {
-        var projects = _context
-            .Projects
-            .Include(p => p.Tickets)
-            .ThenInclude(t => t.Comments)
-            .Include(p => p.AssignedTo)
-            .ThenInclude(at => at.ApplicationUser)
-            .Include(p => p.CreatedBy)
-            .Where(predicate)
-            .ToList();
-        return projects;
-    }
+        public Project Get(Func<Project, bool> predicate)
+        {
+            var project = _context
+                .Projects
+                .Include(p => p.Tickets)
+                .ThenInclude(t => t.Comments)
+                .Include(p => p.AssignedTo)
+                .ThenInclude(at => at.ApplicationUser)
+                .Include(p => p.CreatedBy).Single(predicate);
+            return project;
+        }
 
-    public Project Update(Project entity)
-    {
-        _context.Update(entity);
-        var project = _context
-            .Projects
-            .Include(p => p.Tickets)
-            .ThenInclude(t => t.Comments)
-            .Include(p => p.AssignedTo)
-            .ThenInclude(at => at.ApplicationUser)
-            .Include(p => p.CreatedBy)
-            .Single(p => p.Id == entity.Id);
-        return project;
-    }
+        public ICollection<Project> GetAll()
+        {
+            var projects = _context
+                .Projects
+                .Include(p => p.Tickets)
+                .ThenInclude(t => t.Comments)
+                .Include(p => p.AssignedTo)
+                .ThenInclude(at => at.ApplicationUser)
+                .Include(p => p.CreatedBy)
+                .ToList();
+            return projects;
+        }
 
-    public void Delete(Project entity)
-    {
-        _context.Remove(entity);
-    }
+        public ICollection<Project> GetList(Func<Project, bool> predicate)
+        {
+            var projects = _context
+                .Projects
+                .Include(p => p.Tickets)
+                .ThenInclude(t => t.Comments)
+                .Include(p => p.AssignedTo)
+                .ThenInclude(at => at.ApplicationUser)
+                .Include(p => p.CreatedBy)
+                .Where(predicate)
+                .ToList();
+            return projects;
+        }
 
-    public void Save()
-    {
-        _context.SaveChanges();
-    }
+        public Project Update(Project entity)
+        {
+            _context.Update(entity);
+            var project = _context
+                .Projects
+                .Include(p => p.Tickets)
+                .ThenInclude(t => t.Comments)
+                .Include(p => p.AssignedTo)
+                .ThenInclude(at => at.ApplicationUser)
+                .Include(p => p.CreatedBy)
+                .Single(p => p.Id == entity.Id);
+            return project;
+        }
 
-    public bool Exists(int id)
-    {
-        return _context.Projects.Any(p => p.Id == id);
-    }
+        public void Delete(Project entity)
+        {
+            _context.Remove(entity);
+        }
 
-    public bool Exists()
-    {
-        throw new NotImplementedException();
-    }
+        public void Save()
+        {
+            _context.SaveChanges();
+        }
 
-    public Task<Project> GetAsync(int id)
-    {
-        throw new NotImplementedException();
+        public bool Exists(int id)
+        {
+            return _context.Projects.Any(p => p.Id == id);
+        }
+
+        public bool Exists()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Project> GetAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

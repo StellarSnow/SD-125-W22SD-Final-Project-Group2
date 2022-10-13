@@ -11,7 +11,8 @@ using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using X.PagedList;
 using X.PagedList.Mvc;
-
+using SD_340_W22SD_Final_Project_Group6.BLL;
+using SD_340_W22SD_Final_Project_Group6.DAL;
 
 namespace SD_340_W22SD_Final_Project_Group6.Controllers
 {
@@ -20,11 +21,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _users;
+        private readonly ProjectBusinessLogicLayer _projectBusinessLogicLayer;
 
         public ProjectsController(ApplicationDbContext context, UserManager<ApplicationUser> users)
         {
             _context = context;
             _users = users;
+            _projectBusinessLogicLayer = new ProjectBusinessLogicLayer(new ProjectRepository(context));
         }
         // GET: Projects
         [Authorize]
