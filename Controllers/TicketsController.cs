@@ -163,7 +163,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                     ApplicationUser currUser = _context.Users.FirstOrDefault(u => u.Id == userId);
                     ticket.Owner = currUser;
                     _ticketBLL.UpdateTicket(ticket);
-                    await _context.SaveChangesAsync();
+                    _ticketBLL.SaveTicket();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
