@@ -12,14 +12,10 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUser> _users;
         private AdministrativeBusinessLogic BLL { get; set; }
 
         public AdminController(ApplicationDbContext context, UserManager<ApplicationUser> users)
         {
-            _context = context;
-            _users = users;
             BLL = new AdministrativeBusinessLogic(users);
         }
         public async Task<IActionResult> Index()
