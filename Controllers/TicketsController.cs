@@ -64,8 +64,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public IActionResult Create(int projId)
         {
-            Project currProject = _context.Projects.Include(p => p.AssignedTo).ThenInclude(at => at.ApplicationUser).FirstOrDefault(p => p.Id == projId);
-
+            Project currProject = _projectBLL.Get(projId);
             List<SelectListItem> currUsers = new List<SelectListItem>();
             currProject.AssignedTo.ToList().ForEach(t =>
             {
