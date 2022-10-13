@@ -103,13 +103,12 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // GET: Projects/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Projects == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var project = await _context.Projects
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var project = _projectBusinessLogicLayer.Get(id);
             if (project == null)
             {
                 return NotFound();
@@ -170,8 +169,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                     project.AssignedTo.Add(newUserProj);
                     _context.UserProjects.Add(newUserProj);
                 });
-                _context.Add(project);
-                await _context.SaveChangesAsync();
+                _projectBusinessLogicLayer.Create(project);
                 return RedirectToAction(nameof(Index));
             }
             return View(project);
@@ -181,12 +179,12 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Projects == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var project = await _context.Projects.Include(p => p.AssignedTo).FirstAsync(p => p.Id == id);
+            var project = _projectBusinessLogicLayer.Get(id);
             if (project == null)
             {
                 return NotFound();
@@ -230,8 +228,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                         newUserProj.Project = project;
                         project.AssignedTo.Add(newUserProj);
                     });
-                    _context.Update(project);
-                    await _context.SaveChangesAsync();
+                    _projectBusinessLogicLayer.Edit(project);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -253,13 +250,12 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Projects == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var project = await _context.Projects
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var project = _projectBusinessLogicLayer.Get(id);
             if (project == null)
             {
                 return NotFound();
@@ -278,7 +274,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Projects'  is null.");
             }
-            var project = await _context.Projects.Include(p => p.Tickets).FirstAsync(p => p.Id == id);
+            var project = _projectBusinessLogicLayer.Get(id);
             if (project != null)
             {
                 List<Ticket> tickets = project.Tickets.ToList();
@@ -293,12 +289,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                     _context.UserProjects.Remove(userProj);
                 });
 
-                _context.Projects.Remove(project);
-
-
+                _projectBusinessLogicLayer.Delete(project);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
