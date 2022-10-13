@@ -1,24 +1,27 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using SD_340_W22SD_Final_Project_Group6.Models;
 using SD_340_W22SD_Final_Project_Group6.Data;
-using SD_340_W22SD_Final_Project_Group6.Models;
 
 namespace SD_340_W22SD_Final_Project_Group6.DAL
 {
-    public class AdministrativeRepository : IRepository<ApplicationUser>
+    public class UserRepository : IRepository<ApplicationUser>
     {
-        public ApplicationDbContext DbContext { get; set; }
-        public AdministrativeRepository(ApplicationDbContext dbContext)
+        private ApplicationDbContext _db { get; set; }
+
+        public UserRepository(ApplicationDbContext db)
         {
-            DbContext = dbContext;
+            _db = db;
         }
+
         public void Add(ApplicationUser entity)
         {
             throw new NotImplementedException();
         }
+
         public ApplicationUser Get(int id)
         {
             throw new NotImplementedException();
         }
+
         public Task<ApplicationUser> GetAsync(int id)
         {
             throw new NotImplementedException();
@@ -66,7 +69,7 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
 
         public ApplicationUser Get(string id)
         {
-            throw new NotImplementedException();
+            return _db.Users.Find(id);
         }
     }
 }

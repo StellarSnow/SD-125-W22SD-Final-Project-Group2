@@ -80,5 +80,10 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
             _db.Update(entity);
             return entity;
         }
+
+        public Ticket Get(string id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

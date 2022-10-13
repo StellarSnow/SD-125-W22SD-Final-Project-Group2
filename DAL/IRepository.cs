@@ -6,6 +6,7 @@
         void Add(T entity);
 
         T Get(int id);
+        T Get(string id);
 
         Task<T> GetAsync(int id);
 
