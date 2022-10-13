@@ -30,14 +30,8 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
 
         public async Task<IActionResult> ReassignRoleAsync()
         {
-            List<ApplicationUser> allUsers = _context.Users.ToList();
-
-            List<SelectListItem> users = new List<SelectListItem>();
-            allUsers.ForEach(u =>
-            {
-                users.Add(new SelectListItem(u.UserName, u.Id.ToString()));
-            });
-            ViewBag.Users = users;
+            List<ApplicationUser> allUsers = (List<ApplicationUser>)(await BLL.GetAllUsers())[0];
+            ViewBag.Users = (List<SelectListItem>)(await BLL.GetAllUsers())[1];
 
             return View(allUsers);
         }
@@ -46,19 +40,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ReassignRole(string role, string userId)
         {
+            await BLL.ReassignRole(role, userId);
 
-            ApplicationUser user = _users.Users.First(u => u.Id == userId);
-            ICollection<string> roleUser = await _users.GetRolesAsync(user);
-            if (roleUser.Count == 0)
-            {
-                await _users.AddToRoleAsync(user, role);
-                return RedirectToAction("Index", "Admin", new { area = "" });
-            } else
-            {
-                await _users.RemoveFromRoleAsync(user, roleUser.First());
-                await _users.AddToRoleAsync(user, role);
-                return RedirectToAction("Index", "Admin", new { area = "" });
-            }
+            return RedirectToAction("Index", "Admin", new { area = "" });
         }
     }
 }

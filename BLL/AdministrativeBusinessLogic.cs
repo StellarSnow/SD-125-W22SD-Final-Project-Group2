@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
@@ -27,6 +28,39 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             viewModel.allUsers = allUsers;
 
             return viewModel;
+        }
+
+        public async Task<object[]> GetAllUsers()
+        {
+            List<ApplicationUser> allUsers = await UserManager.Users.ToListAsync();
+
+            List<SelectListItem> users = new List<SelectListItem>();
+            
+            allUsers.ForEach(u =>
+            {
+                users.Add(new SelectListItem(u.UserName, u.Id.ToString()));
+            });
+
+            return new object[]
+            {
+                allUsers, users
+            };
+        }
+
+        public async Task ReassignRole(string role, string userId)
+        {
+            ApplicationUser user = UserManager.Users.First(u => u.Id == userId);
+            ICollection<string> roleUser = await UserManager.GetRolesAsync(user);
+            
+            if (roleUser.Count == 0)
+            {
+                await UserManager.AddToRoleAsync(user, role);
+            }
+            else
+            {
+                await UserManager.RemoveFromRoleAsync(user, roleUser.First());
+                await UserManager.AddToRoleAsync(user, role);
+            }
         }
     }
 }
