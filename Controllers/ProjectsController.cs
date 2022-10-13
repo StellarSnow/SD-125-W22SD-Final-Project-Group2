@@ -47,89 +47,37 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 case "Priority":
                     if (sort == true)
                     {
-                        SortedProjs =
-                        await _context.Projects
-                        .Include(p => p.CreatedBy)
-                        .Include(p => p.AssignedTo)
-                        .ThenInclude(at => at.ApplicationUser)
-                        .Include(p => p.Tickets.OrderByDescending(t => t.TicketPriority))
-                        .ThenInclude(t => t.Owner)
-                        .ToListAsync();
+                        SortedProjs = _projectBusinessLogicLayer.GetOrderedByPriority();
+
                     }
                     else
                     {
-                        SortedProjs =
-                        await _context.Projects
-                        .Include(p => p.CreatedBy)
-                        .Include(p => p.AssignedTo)
-                        .ThenInclude(at => at.ApplicationUser)
-                        .Include(p => p.Tickets.OrderBy(t => t.TicketPriority))
-                        .ThenInclude(t => t.Owner)
-                        .ToListAsync();
+                        SortedProjs = _projectBusinessLogicLayer.GetOrderedByPriorityAsc();
                     }
 
                     break;
                 case "RequiredHrs":
                     if (sort == true)
                     {
-                        SortedProjs =
-                        await _context.Projects
-                        .Include(p => p.CreatedBy)
-                        .Include(p => p.AssignedTo)
-                        .ThenInclude(at => at.ApplicationUser)
-                        .Include(p => p.Tickets.OrderByDescending(t => t.RequiredHours))
-                        .ThenInclude(t => t.Owner)
-                        .ToListAsync();
+                        SortedProjs = _projectBusinessLogicLayer.GetOrderedByRequiredHours();
                     }
                     else
                     {
-                        SortedProjs =
-                        await _context.Projects
-                        .Include(p => p.CreatedBy)
-                        .Include(p => p.AssignedTo)
-                        .ThenInclude(at => at.ApplicationUser)
-                        .Include(p => p.Tickets.OrderBy(t => t.RequiredHours))
-                        .ThenInclude(t => t.Owner)
-                        .ToListAsync();
+                        SortedProjs = _projectBusinessLogicLayer.GetOrderedByRequiredHoursAsc();
                     }
 
                     break;
                 case "Completed":
-                    SortedProjs =
-                        await _context.Projects
-                        .Include(p => p.CreatedBy)
-                        .Include(p => p.AssignedTo)
-                        .ThenInclude(at => at.ApplicationUser)
-                        .Include(p => p.Tickets.Where(t => t.Completed == true))
-                        .ThenInclude(t => t.Owner)
-                        .ToListAsync();
+                    SortedProjs = _projectBusinessLogicLayer.GetCompletedProjects();
                     break;
                 default:
                     if (userId != null)
                     {
-                        SortedProjs =
-                        await _context.Projects
-                        .OrderBy(p => p.ProjectName)
-                        .Include(p => p.CreatedBy)
-                        .Include(p => p.AssignedTo)
-                        .ThenInclude(at => at.ApplicationUser)
-                        .Include(p => p.Tickets.Where(t => t.Owner.Id.Equals(userId)))
-                        .ThenInclude(t => t.Owner)
-                        .Include(p => p.Tickets).ThenInclude(t => t.TicketWatchers).ThenInclude(tw => tw.Watcher)
-                        .ToListAsync();
+                        SortedProjs = _projectBusinessLogicLayer.GetAll().OrderBy(p => p.ProjectName).ToList();
                     }
                     else
                     {
-                        SortedProjs =
-                        await _context.Projects
-                        .OrderBy(p => p.ProjectName)
-                        .Include(p => p.CreatedBy)
-                        .Include(p => p.AssignedTo)
-                        .ThenInclude(at => at.ApplicationUser)
-                        .Include(p => p.Tickets)
-                        .ThenInclude(t => t.Owner)
-                        .Include(p => p.Tickets).ThenInclude(t => t.TicketWatchers).ThenInclude(tw => tw.Watcher)
-                        .ToListAsync();
+                        SortedProjs = _projectBusinessLogicLayer.GetAll().OrderBy(p => p.ProjectName).ToList();
                     }
 
                     break;
