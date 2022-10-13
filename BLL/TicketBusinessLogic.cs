@@ -22,6 +22,11 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             return _repo.Get(id);
         }
 
+        public Ticket UpdateTicket(Ticket ticket)
+        {
+            return _repo.Update(ticket);
+        }
+
         public void Save()
         {
             _repo.Save();
