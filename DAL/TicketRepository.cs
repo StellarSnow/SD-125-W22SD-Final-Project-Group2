@@ -70,9 +70,15 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
             _db.SaveChanges();
         }
 
+        public ApplicationDbContext Get_db()
+        {
+            return _db;
+        }
+
         public Ticket Update(Ticket entity)
         {
-            throw new NotImplementedException();
+            _db.Update(entity);
+            return entity;
         }
     }
 }
