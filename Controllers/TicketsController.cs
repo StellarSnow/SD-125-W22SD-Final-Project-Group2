@@ -19,10 +19,12 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
     {
         private readonly ApplicationDbContext _context;
         private TicketBusinessLogic _ticketBLL { get; set; }
+        private ProjectBusinessLogicLayer _projectBLL { get; set; }
         public TicketsController(ApplicationDbContext context)
         {
             _context = context;
             _ticketBLL = new TicketBusinessLogic(new TicketRepository(context));
+            _projectBLL = new ProjectBusinessLogicLayer(new ProjectRepository(context));
         }
 
         // GET: Tickets
@@ -62,8 +64,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public IActionResult Create(int projId)
         {
-            Project currProject = _context.Projects.Include(p => p.AssignedTo).ThenInclude(at => at.ApplicationUser).FirstOrDefault(p => p.Id == projId);
-
+            Project currProject = _projectBLL.Get(projId);
             List<SelectListItem> currUsers = new List<SelectListItem>();
             currProject.AssignedTo.ToList().ForEach(t =>
             {
