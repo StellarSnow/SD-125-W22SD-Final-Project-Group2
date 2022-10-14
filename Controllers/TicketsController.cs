@@ -90,7 +90,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         {
             if (ModelState.IsValid)
             { 
-                ticket.Project = await _context.Projects.FirstAsync(p => p.Id == projId);
+                ticket.Project = _projectBLL.GetProject(projId);
                 Project currProj = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projId);
                 ApplicationUser owner = _context.Users.FirstOrDefault(u => u.Id == userId);
                 ticket.Owner = owner;
