@@ -91,12 +91,12 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             if (ModelState.IsValid)
             { 
                 ticket.Project = _projectBLL.GetProject(projId);
-                Project currProj = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projId);
-                ApplicationUser owner = _context.Users.FirstOrDefault(u => u.Id == userId);
+                Project currProj = _projectBLL.GetProject(projId);
+                ApplicationUser owner = _userBLL.GetUser(userId);
                 ticket.Owner = owner;
-                _context.Add(ticket);
+                _ticketBLL.Add(ticket);
                 currProj.Tickets.Add(ticket);
-                await _context.SaveChangesAsync();
+                _ticketBLL.SaveTicket();
                 return RedirectToAction("Index","Projects", new { area = ""});
             }
             return View(ticket);
