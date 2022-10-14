@@ -39,7 +39,7 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
 
         public ICollection<ApplicationUser> GetList(Func<ApplicationUser, bool> predicate)
         {
-            throw new NotImplementedException();
+            return _db.Users.Where(predicate).ToList();
         }
 
         public ApplicationUser Update(ApplicationUser entity)

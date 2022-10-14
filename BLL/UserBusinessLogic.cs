@@ -16,5 +16,10 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         {
             return _userRepository.Get(id);
         }
+
+        public List<ApplicationUser> GetUsersWhoAreNotTheTicketOwner(ApplicationUser owner)
+        {
+            return _userRepository.GetList(u => u != owner).ToList();
+        }
     }
 }
