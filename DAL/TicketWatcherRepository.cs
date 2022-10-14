@@ -19,7 +19,7 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
 
         public void Delete(TicketWatcher entity)
         {
-            throw new NotImplementedException();
+            DbContext.TicketWatchers.Remove(entity);
         }
 
         public bool Exists(int id)
@@ -44,7 +44,7 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
 
         public TicketWatcher Get(Func<TicketWatcher, bool> predicate)
         {
-            throw new NotImplementedException();
+            return DbContext.TicketWatchers.First(predicate);
         }
 
         public ICollection<TicketWatcher> GetAll()
