@@ -20,11 +20,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         private readonly ApplicationDbContext _context;
         private TicketBusinessLogic _ticketBLL { get; set; }
         private ProjectBusinessLogicLayer _projectBLL { get; set; }
+        private UserBusinessLogic _userBLL { get; set; }
         public TicketsController(ApplicationDbContext context)
         {
             _context = context;
             _ticketBLL = new TicketBusinessLogic(new TicketRepository(context));
             _projectBLL = new ProjectBusinessLogicLayer(new ProjectRepository(context));
+            _userBLL = new UserBusinessLogic(new UserRepository(context));
         }
 
         // GET: Tickets
