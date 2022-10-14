@@ -112,13 +112,13 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             }
 
             Ticket ticket = _ticketBLL.GetTicket((int)id);
-
+            
             if (ticket == null)
             {
                 return NotFound();
             }
 
-            List<ApplicationUser> results = _context.Users.Where(u => u != ticket.Owner).ToList();
+            List<ApplicationUser> results = _userBLL.GetUsersWhoAreNotTheTicketOwner(ticket.Owner);
 
             List<SelectListItem> currUsers = new List<SelectListItem>();
             results.ForEach(r =>
