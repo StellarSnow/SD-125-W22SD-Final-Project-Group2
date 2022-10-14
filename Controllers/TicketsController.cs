@@ -25,7 +25,6 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         private TicketWatcherBusinessLogic _ticketWatcherBLL { get; set; }
         public TicketsController(ApplicationDbContext context)
         {
-            _context = context;
             _ticketBLL = new TicketBusinessLogic(new TicketRepository(context));
             _projectBLL = new ProjectBusinessLogicLayer(new ProjectRepository(context));
             _userBLL = new UserBusinessLogic(new UserRepository(context));
