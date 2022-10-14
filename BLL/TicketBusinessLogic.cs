@@ -46,5 +46,10 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         {
             _repo.Delete(ticket);
         }
+
+        public bool DoesTicketExist(int id)
+        {
+            return _repo.Exists(id);
+        }
     }
 }
