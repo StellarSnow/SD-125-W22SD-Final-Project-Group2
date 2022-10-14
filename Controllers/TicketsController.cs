@@ -21,12 +21,14 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         private TicketBusinessLogic _ticketBLL { get; set; }
         private ProjectBusinessLogicLayer _projectBLL { get; set; }
         private UserBusinessLogic _userBLL { get; set; }
+        private CommentBusinessLogic _commentBLL { get; set; }
         public TicketsController(ApplicationDbContext context)
         {
             _context = context;
             _ticketBLL = new TicketBusinessLogic(new TicketRepository(context));
             _projectBLL = new ProjectBusinessLogicLayer(new ProjectRepository(context));
             _userBLL = new UserBusinessLogic(new UserRepository(context));
+            _commentBLL = new CommentBusinessLogic(new CommentRepository(context)); 
         }
 
         // GET: Tickets
@@ -193,18 +195,18 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 {
                     Comment newComment = new Comment();
                     string userName = User.Identity.Name;
-                    ApplicationUser user = _userBLL.GetUser(userName);
+                    ApplicationUser user = _userBLL.GetUserByUserName(userName);
                     Ticket ticket = _ticketBLL.GetTicket(TaskId);
 
                     newComment.CreatedBy = user;
                     newComment.Description = TaskText;
                     newComment.Ticket = ticket;
                     user.Comments.Add(newComment);
-                    _context.Comments.Add(newComment);
+                    _commentBLL.AddComment(newComment);
                     ticket.Comments.Add(newComment);
 
                     int Id = TaskId;
-                    await _context.SaveChangesAsync();
+                    _commentBLL.SaveComment();
                     return RedirectToAction("Details", new {Id});
 
                 }

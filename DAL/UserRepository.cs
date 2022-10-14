@@ -29,7 +29,7 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
 
         public ApplicationUser Get(Func<ApplicationUser, bool> predicate)
         {
-            throw new NotImplementedException();
+            return _db.Users.First(predicate);
         }
 
         public ICollection<ApplicationUser> GetAll()
