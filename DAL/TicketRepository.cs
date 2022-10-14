@@ -57,7 +57,7 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
 
         public ICollection<Ticket> GetAll()
         {
-            throw new NotImplementedException();
+            return _db.Tickets.Include(t => t.Project).Include(t => t.Owner).ToList();
         }
 
         public ICollection<Ticket> GetList(Func<Ticket, bool> predicate)
