@@ -42,7 +42,7 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
 
         public bool Exists(int id)
         {
-            throw new NotImplementedException();
+            return _db.Tickets.Any(t => t.Id == id);
         }
 
         public bool Exists()
