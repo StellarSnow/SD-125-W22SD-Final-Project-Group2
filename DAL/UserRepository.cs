@@ -71,5 +71,10 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
         {
             return _db.Users.Find(id);
         }
+
+        public ApplicationUser GetEntity(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
