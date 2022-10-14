@@ -36,9 +36,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         // GET: Tickets
         public async Task<IActionResult> Index()
         {
-              return _context.Tickets != null ? 
-                          View(await _context.Tickets.Include(t => t.Project).Include(t => t.Owner).ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
+            return View(_ticketBLL.GetAllTickets());
         }
 
         // GET: Tickets/Details/5

@@ -36,5 +36,10 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         {
             _repo.Add(entity);
         }
+
+        public List<Ticket> GetAllTickets()
+        {
+            return _repo.GetAll().ToList();
+        }
     }
 }
