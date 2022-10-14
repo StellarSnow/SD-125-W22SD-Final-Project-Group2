@@ -193,7 +193,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 {
                     Comment newComment = new Comment();
                     string userName = User.Identity.Name;
-                    ApplicationUser user = _context.Users.First(u => u.UserName == userName);
+                    ApplicationUser user = _userBLL.GetUser(userName);
                     Ticket ticket = _ticketBLL.GetTicket(TaskId);
 
                     newComment.CreatedBy = user;
