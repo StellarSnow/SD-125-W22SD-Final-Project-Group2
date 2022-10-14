@@ -22,6 +22,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         private ProjectBusinessLogicLayer _projectBLL { get; set; }
         private UserBusinessLogic _userBLL { get; set; }
         private CommentBusinessLogic _commentBLL { get; set; }
+        private TicketWatcherBusinessLogic _ticketWatcherBLL { get; set; }
         public TicketsController(ApplicationDbContext context)
         {
             _context = context;
@@ -29,6 +30,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             _projectBLL = new ProjectBusinessLogicLayer(new ProjectRepository(context));
             _userBLL = new UserBusinessLogic(new UserRepository(context));
             _commentBLL = new CommentBusinessLogic(new CommentRepository(context)); 
+            _ticketWatcherBLL = new TicketWatcherBusinessLogic(new TicketWatcherRepository(context));   
         }
 
         // GET: Tickets
@@ -246,16 +248,16 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 {
                     TicketWatcher newTickWatch = new TicketWatcher();
                     string userName = User.Identity.Name;
-                    ApplicationUser user = _context.Users.First(u => u.UserName == userName);
+                    ApplicationUser user = _userBLL.GetUserByUserName(userName);
                     Ticket ticket = _ticketBLL.GetTicket(id);
 
                     newTickWatch.Ticket = ticket;
                     newTickWatch.Watcher = user;
                     user.TicketWatching.Add(newTickWatch);
                     ticket.TicketWatchers.Add(newTickWatch);
-                    _context.Add(newTickWatch);
+                    _ticketWatcherBLL.AddTicketWatcher(newTickWatch);
 
-                    await _context.SaveChangesAsync();
+                    _ticketWatcherBLL.SaveTicketWatcher();
                     return RedirectToAction("Details", new { id });
 
                 }
