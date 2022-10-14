@@ -255,9 +255,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                     newTickWatch.Watcher = user;
                     user.TicketWatching.Add(newTickWatch);
                     ticket.TicketWatchers.Add(newTickWatch);
-                    _context.Add(newTickWatch);
+                    _ticketWatcherBLL.AddTicketWatcher(newTickWatch);
 
-                    await _context.SaveChangesAsync();
+                    _ticketWatcherBLL.SaveTicketWatcher();
                     return RedirectToAction("Details", new { id });
 
                 }

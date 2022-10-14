@@ -11,5 +11,15 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         {
             _repo = repo;
         }
+
+        public void AddTicketWatcher(TicketWatcher entity)
+        {
+            _repo.Add(entity);
+        }
+
+        public void SaveTicketWatcher()
+        {
+            _repo.Save();
+        }
     }
 }
