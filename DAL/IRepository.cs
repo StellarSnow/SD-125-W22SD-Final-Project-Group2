@@ -7,7 +7,7 @@
 
         T Get(int id);
         T Get(string id);
-
+        T GetEntity(int id);
         Task<T> GetAsync(int id);
 
         T Get(Func<T, bool> predicate);

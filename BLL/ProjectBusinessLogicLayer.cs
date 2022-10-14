@@ -84,5 +84,10 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
             _projectRepository.Delete(entity);
             _projectRepository.Save();
         }
+
+        public Project GetProject(int id)
+        {
+            return _projectRepository.GetEntity(id);
+        }
     }
 }

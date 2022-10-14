@@ -114,5 +114,10 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
         {
             throw new NotImplementedException();
         }
+
+        public Project GetEntity(int id)
+        {
+            return _context.Projects.Find(id);
+        }
     }
 }

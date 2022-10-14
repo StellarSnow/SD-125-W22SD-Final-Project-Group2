@@ -15,7 +15,7 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
 
         public void Add(Ticket entity)
         {
-            throw new NotImplementedException();
+            _db.Add(entity);
         }
 
         public Ticket Get(int id)
@@ -82,6 +82,11 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
         }
 
         public Ticket Get(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Ticket GetEntity(int id)
         {
             throw new NotImplementedException();
         }
