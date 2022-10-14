@@ -137,11 +137,11 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 return NotFound();
             }
-            Ticket currTicket = await _context.Tickets.Include(t => t.Owner).FirstAsync(t => t.Id == ticketId);
-            ApplicationUser currUser = await _context.Users.FirstAsync(u => u.Id == id);
+            Ticket currTicket = _ticketBLL.GetTicket(ticketId);
+            ApplicationUser currUser = _userBLL.GetUser(id);
             //To be fixed ASAP
             currTicket.Owner = currUser;
-            await _context.SaveChangesAsync();
+            _ticketBLL.SaveTicket();
             
             return RedirectToAction("Edit", new { id = ticketId });
         }
