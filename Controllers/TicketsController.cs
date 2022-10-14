@@ -362,19 +362,15 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         [Authorize(Roles = "ProjectManager")]
         public async Task<IActionResult> DeleteConfirmed(int id, int projId)
         {
-            if (_context.Tickets == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Tickets'  is null.");
-            }
-            var ticket = await _context.Tickets.Include(t => t.Project).FirstAsync(p => p.Id == id);
-            Project currProj = await _context.Projects.FirstAsync(p => p.Id.Equals(projId));
+            var ticket = _ticketBLL.GetTicket(id);
+            Project currProj = _projectBLL.GetProject(projId);
             if (ticket != null)
             {
                 currProj.Tickets.Remove(ticket);
-                _context.Tickets.Remove(ticket);
+                _ticketBLL.DeleteTicket(ticket);
             }
-            
-            await _context.SaveChangesAsync();
+
+            _ticketBLL.SaveTicket();
             return RedirectToAction("Index", "Projects");
         }
 
