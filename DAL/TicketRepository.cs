@@ -37,7 +37,7 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
 
         public void Delete(Ticket entity)
         {
-            throw new NotImplementedException();
+            _db.Tickets.Remove(entity);
         }
 
         public bool Exists(int id)

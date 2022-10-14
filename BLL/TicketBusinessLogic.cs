@@ -41,5 +41,10 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         {
             return _repo.GetAll().ToList();
         }
+
+        public void DeleteTicket(Ticket ticket)
+        {
+            _repo.Delete(ticket);
+        }
     }
 }
