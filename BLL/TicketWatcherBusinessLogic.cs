@@ -21,5 +21,15 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
         {
             _repo.Save();
         }
+
+        public TicketWatcher GetTicketWatcherByTicketAndUserName(Ticket ticket, ApplicationUser user)
+        {
+            return _repo.Get(tw => tw.Ticket.Id == ticket.Id && tw.Watcher.Equals(user));
+        }
+
+        public void DeleteTicket(TicketWatcher ticketWatcher)
+        {
+            _repo.Delete(ticketWatcher);
+        }
     }
 }

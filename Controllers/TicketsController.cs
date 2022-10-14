@@ -277,14 +277,15 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 {
                     
                     string userName = User.Identity.Name;
-                    ApplicationUser user = _context.Users.First(u => u.UserName == userName);
+                    ApplicationUser user = _userBLL.GetUserByUserName(userName);
                     Ticket ticket = _ticketBLL.GetTicket(id);
-                    TicketWatcher currTickWatch = await _context.TicketWatchers.FirstAsync(tw => tw.Ticket.Equals(ticket) && tw.Watcher.Equals(user));
-                    _context.TicketWatchers.Remove(currTickWatch);
+                    
+                    TicketWatcher currTickWatch = _ticketWatcherBLL.GetTicketWatcherByTicketAndUserName(ticket, user);
+                    _ticketWatcherBLL.DeleteTicket(currTickWatch);
                     ticket.TicketWatchers.Remove(currTickWatch);
                     user.TicketWatching.Remove(currTickWatch);
 
-                    await _context.SaveChangesAsync();
+                    _ticketWatcherBLL.SaveTicketWatcher();
                     return RedirectToAction("Details", new { id });
 
                 }
