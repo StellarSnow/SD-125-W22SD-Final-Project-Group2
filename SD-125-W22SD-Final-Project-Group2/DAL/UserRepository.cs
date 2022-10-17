@@ -1,15 +1,18 @@
 ﻿using SD_340_W22SD_Final_Project_Group6.Models;
 using SD_340_W22SD_Final_Project_Group6.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace SD_340_W22SD_Final_Project_Group6.DAL
 {
     public class UserRepository : IRepository<ApplicationUser>
     {
         private ApplicationDbContext _db { get; set; }
+        private UserManager<ApplicationUser> _userManager { get; set; }
 
-        public UserRepository(ApplicationDbContext db)
+        public UserRepository(ApplicationDbContext db, UserManager<ApplicationUser> userManager)
         {
             _db = db;
+            _userManager = userManager;
         }
 
         public void Add(ApplicationUser entity)
@@ -20,6 +23,11 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
         public ApplicationUser Get(int id)
         {
             throw new NotImplementedException();
+        }
+
+        public ApplicationUser Get(string id)
+        {
+            return _userManager.Users.First(u => u.Id == id);
         }
 
         public Task<ApplicationUser> GetAsync(int id)
@@ -34,12 +42,17 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
 
         public ICollection<ApplicationUser> GetAll()
         {
-            throw new NotImplementedException();
+            return _userManager.Users.ToList();
         }
 
         public ICollection<ApplicationUser> GetList(Func<ApplicationUser, bool> predicate)
         {
             return _db.Users.Where(predicate).ToList();
+        }
+
+        public async Task<ICollection<string>> GetRoles(ApplicationUser user)
+        {
+            return await _userManager.GetRolesAsync(user);
         }
 
         public ApplicationUser Update(ApplicationUser entity)
@@ -65,11 +78,6 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
         public bool Exists()
         {
             throw new NotImplementedException();
-        }
-
-        public ApplicationUser Get(string id)
-        {
-            return _db.Users.Find(id);
         }
 
         public ApplicationUser GetEntity(int id)

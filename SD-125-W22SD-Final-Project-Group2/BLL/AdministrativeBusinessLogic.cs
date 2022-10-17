@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using SD_340_W22SD_Final_Project_Group6.DAL;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
 
@@ -8,11 +9,15 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 {
     public class AdministrativeBusinessLogic
     {
+        private IRepository<ApplicationUser> _userRepositry;
         public UserManager<ApplicationUser> UserManager { get; set; }
         
-        public AdministrativeBusinessLogic(UserManager<ApplicationUser> userManager)
-        {
+        public AdministrativeBusinessLogic(
+            UserManager<ApplicationUser> userManager,
+            IRepository<ApplicationUser> userRepository
+        ) {
             UserManager = userManager;
+            _userRepositry = userRepository;
         }
         // did not use repositry because userManager is already abstracting the data Layer. because we dont see user Manager calling db it does internally.
         public async Task<ProjectManagersAndDevelopersViewModels> CreateIndexViewModelAsync()
@@ -32,7 +37,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async Task<object[]> GetAllUsers()
         {
-            List<ApplicationUser> allUsers = await UserManager.Users.ToListAsync();
+            List<ApplicationUser> allUsers = _userRepositry.GetAll().ToList();
 
             List<SelectListItem> users = new List<SelectListItem>();
             
@@ -49,7 +54,8 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async Task ReassignRole(string role, string userId)
         {
-            ApplicationUser user = UserManager.Users.First(u => u.Id == userId);
+            ApplicationUser user = _userRepositry.Get(userId);
+
             ICollection<string> roleUser = await UserManager.GetRolesAsync(user);
             
             if (roleUser.Count == 0)
