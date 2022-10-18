@@ -1,10 +1,11 @@
 ﻿using SD_340_W22SD_Final_Project_Group6.Models;
 using SD_340_W22SD_Final_Project_Group6.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace SD_340_W22SD_Final_Project_Group6.DAL
 {
-    public class UserRepository : IRepository<ApplicationUser>
+    public class UserRepository : IUserRepository<ApplicationUser>
     {
         private ApplicationDbContext _db { get; set; }
         private UserManager<ApplicationUser> _userManager { get; set; }
@@ -15,74 +16,46 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
             _userManager = userManager;
         }
 
-        public void Add(ApplicationUser entity)
+        public async Task<ApplicationUser> GetAsync(string id)
         {
-            throw new NotImplementedException();
+            return await _userManager.FindByIdAsync(id);
         }
 
-        public ApplicationUser Get(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ApplicationUser Get(string id)
-        {
-            return _userManager.Users.First(u => u.Id == id);
-        }
-
-        public Task<ApplicationUser> GetAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ApplicationUser Get(Func<ApplicationUser, bool> predicate)
+        public ApplicationUser GetByPredicate(Func<ApplicationUser, bool> predicate)
         {
             return _db.Users.First(predicate);
         }
 
-        public ICollection<ApplicationUser> GetAll()
+        public async Task<List<ApplicationUser>> GetAllAsync()
         {
-            return _userManager.Users.ToList();
+            return await _userManager.Users.ToListAsync();
         }
 
-        public ICollection<ApplicationUser> GetList(Func<ApplicationUser, bool> predicate)
+        public async Task<List<ApplicationUser>> GetListAsync(Func<ApplicationUser, bool> predicate)
         {
             return _db.Users.Where(predicate).ToList();
         }
 
-        public async Task<ICollection<string>> GetRoles(ApplicationUser user)
+        public async Task<ICollection<string>> GetRolesAsync(ApplicationUser user)
         {
             return await _userManager.GetRolesAsync(user);
         }
 
-        public ApplicationUser Update(ApplicationUser entity)
+        public async Task AddUserToRoleAsync(ApplicationUser user, string role)
         {
-            throw new NotImplementedException();
+            await _userManager.AddToRoleAsync(user, role);
         }
 
-        public void Delete(ApplicationUser entity)
+        public async Task RemoveUserFromRoleAsync(ApplicationUser user, string role)
         {
-            throw new NotImplementedException();
+            await _userManager.RemoveFromRoleAsync(user, role);
         }
 
-        public void Save()
+        public async Task<IList<ApplicationUser>> GetUsersInRoleAsync(string role)
         {
-            throw new NotImplementedException();
-        }
+            IList<ApplicationUser> users = await _userManager.GetUsersInRoleAsync(role);
 
-        public bool Exists(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Exists()
-        {
-            throw new NotImplementedException();
-        }
-
-        public ApplicationUser GetEntity(int id)
-        {
-            throw new NotImplementedException();
+            return users;
         }
     }
 }

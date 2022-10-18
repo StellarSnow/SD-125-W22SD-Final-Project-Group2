@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SD_340_W22SD_Final_Project_Group6.BLL;
+using SD_340_W22SD_Final_Project_Group6.DAL;
 using SD_340_W22SD_Final_Project_Group6.Data;
 using SD_340_W22SD_Final_Project_Group6.Models;
 using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
@@ -16,8 +17,9 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
 
         public AdminController(ApplicationDbContext context, UserManager<ApplicationUser> users)
         {
-            BLL = new AdministrativeBusinessLogic(users);
+            BLL = new AdministrativeBusinessLogic(new UserRepository(context, users));
         }
+
         public async Task<IActionResult> Index()
         {
             ProjectManagersAndDevelopersViewModels vm = await BLL.CreateIndexViewModelAsync();

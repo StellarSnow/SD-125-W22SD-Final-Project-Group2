@@ -5,26 +5,28 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 {
     public class UserBusinessLogic
     {
-        private IRepository<ApplicationUser> _userRepository { get; set; }
+        private IUserRepository<ApplicationUser> _userRepository { get; set; }
 
-        public UserBusinessLogic(IRepository<ApplicationUser> userRepository)
+        public UserBusinessLogic(IUserRepository<ApplicationUser> userRepository)
         {
             _userRepository = userRepository;
         }
 
-        public ApplicationUser GetUser(string id)
+        public async Task<ApplicationUser> GetUserAsync(string id)
         {
-            return _userRepository.Get(id);
+            return await _userRepository.GetAsync(id);
         }
 
         public ApplicationUser GetUserByUserName(string userName)
         {
-            return _userRepository.Get(u => u.UserName.Equals(userName));
+            return _userRepository.GetByPredicate(u => u.UserName.Equals(userName));
         }
 
-        public List<ApplicationUser> GetUsersWhoAreNotTheTicketOwner(ApplicationUser owner)
+        public async Task<List<ApplicationUser>> GetUsersWhoAreNotTheTicketOwnerAsync(ApplicationUser owner)
         {
-            return _userRepository.GetList(u => u != owner).ToList();
+            List<ApplicationUser> usersWhoAreNotOwners = await _userRepository.GetListAsync(u => u != owner);
+
+            return usersWhoAreNotOwners;
         }
     }
 }

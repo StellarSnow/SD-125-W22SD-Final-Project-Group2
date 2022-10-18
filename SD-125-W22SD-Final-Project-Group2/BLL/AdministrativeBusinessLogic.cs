@@ -9,24 +9,23 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 {
     public class AdministrativeBusinessLogic
     {
-        private IRepository<ApplicationUser> _userRepositry;
-        public UserManager<ApplicationUser> UserManager { get; set; }
+        private IUserRepository<ApplicationUser> _userRepositry;
         
         public AdministrativeBusinessLogic(
-            UserManager<ApplicationUser> userManager,
-            IRepository<ApplicationUser> userRepository
+            IUserRepository<ApplicationUser> userRepository
         ) {
-            UserManager = userManager;
             _userRepositry = userRepository;
         }
-        // did not use repositry because userManager is already abstracting the data Layer. because we dont see user Manager calling db it does internally.
+
         public async Task<ProjectManagersAndDevelopersViewModels> CreateIndexViewModelAsync()
         {
             ProjectManagersAndDevelopersViewModels viewModel = new ProjectManagersAndDevelopersViewModels();
 
-            List<ApplicationUser> pmUsers = (List<ApplicationUser>)await UserManager.GetUsersInRoleAsync("ProjectManager");
-            List<ApplicationUser> devUsers = (List<ApplicationUser>)await UserManager.GetUsersInRoleAsync("Developer");
-            List<ApplicationUser> allUsers = await UserManager.Users.ToListAsync();
+            List<ApplicationUser> pmUsers = (List<ApplicationUser>)await _userRepositry.GetUsersInRoleAsync("ProjectManager");
+
+            List<ApplicationUser> devUsers = (List<ApplicationUser>)await _userRepositry.GetUsersInRoleAsync("Developer");
+
+            List<ApplicationUser> allUsers = await _userRepositry.GetAllAsync();
 
             viewModel.pms = pmUsers;
             viewModel.devs = devUsers;
@@ -37,7 +36,7 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async Task<object[]> GetAllUsers()
         {
-            List<ApplicationUser> allUsers = _userRepositry.GetAll().ToList();
+            List<ApplicationUser> allUsers = (await _userRepositry.GetAllAsync()).ToList();
 
             List<SelectListItem> users = new List<SelectListItem>();
             
@@ -54,18 +53,18 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async Task ReassignRole(string role, string userId)
         {
-            ApplicationUser user = _userRepositry.Get(userId);
+            ApplicationUser user = await _userRepositry.GetAsync(userId);
 
-            ICollection<string> roleUser = await UserManager.GetRolesAsync(user);
+            ICollection<string> roleUser = await _userRepositry.GetRolesAsync(user);
             
             if (roleUser.Count == 0)
             {
-                await UserManager.AddToRoleAsync(user, role);
+                await _userRepositry.AddUserToRoleAsync(user, role);
             }
             else
             {
-                await UserManager.RemoveFromRoleAsync(user, roleUser.First());
-                await UserManager.AddToRoleAsync(user, role);
+                await _userRepositry.RemoveUserFromRoleAsync(user, roleUser.First());
+                await _userRepositry.AddUserToRoleAsync(user, role);
             }
         }
     }

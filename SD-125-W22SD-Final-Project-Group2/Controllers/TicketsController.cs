@@ -11,6 +11,7 @@ using SD_340_W22SD_Final_Project_Group6.Models;
 using SD_340_W22SD_Final_Project_Group6.Models.ViewModel;
 using SD_340_W22SD_Final_Project_Group6.BLL;
 using SD_340_W22SD_Final_Project_Group6.DAL;
+using Microsoft.AspNetCore.Identity;
 
 namespace SD_340_W22SD_Final_Project_Group6.Controllers
 {
@@ -23,11 +24,11 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
         private UserBusinessLogic _userBLL { get; set; }
         private CommentBusinessLogic _commentBLL { get; set; }
         private TicketWatcherBusinessLogic _ticketWatcherBLL { get; set; }
-        public TicketsController(ApplicationDbContext context)
+        public TicketsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _ticketBLL = new TicketBusinessLogic(new TicketRepository(context));
             _projectBLL = new ProjectBusinessLogicLayer(new ProjectRepository(context));
-            _userBLL = new UserBusinessLogic(new UserRepository(context));
+            _userBLL = new UserBusinessLogic(new UserRepository(context, userManager));
             _commentBLL = new CommentBusinessLogic(new CommentRepository(context)); 
             _ticketWatcherBLL = new TicketWatcherBusinessLogic(new TicketWatcherRepository(context));   
         }
@@ -93,7 +94,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             { 
                 ticket.Project = _projectBLL.GetProject(projId);
                 Project currProj = _projectBLL.GetProject(projId);
-                ApplicationUser owner = _userBLL.GetUser(userId);
+                ApplicationUser owner = await _userBLL.GetUserAsync(userId);
                 ticket.Owner = owner;
                 _ticketBLL.Add(ticket);
                 currProj.Tickets.Add(ticket);
@@ -119,7 +120,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 return NotFound();
             }
 
-            List<ApplicationUser> results = _userBLL.GetUsersWhoAreNotTheTicketOwner(ticket.Owner);
+            List<ApplicationUser> results = await _userBLL.GetUsersWhoAreNotTheTicketOwnerAsync(ticket.Owner);
 
             List<SelectListItem> currUsers = new List<SelectListItem>();
             results.ForEach(r =>
@@ -139,7 +140,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 return NotFound();
             }
             Ticket currTicket = _ticketBLL.GetTicket(ticketId);
-            ApplicationUser currUser = _userBLL.GetUser(id);
+            ApplicationUser currUser = await _userBLL.GetUserAsync(id);
             //To be fixed ASAP
             currTicket.Owner = currUser;
             _ticketBLL.SaveTicket();
@@ -164,7 +165,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
             {
                 try
                 {
-                    ApplicationUser currUser = _userBLL.GetUser(userId);
+                    ApplicationUser currUser = await _userBLL.GetUserAsync(userId);
                     ticket.Owner = currUser;
                     _ticketBLL.UpdateTicket(ticket);
                     _ticketBLL.SaveTicket();
