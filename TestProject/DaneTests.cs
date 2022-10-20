@@ -137,5 +137,26 @@ namespace TestProject
 
             Assert.AreNotEqual(originalBody, ticket2.Body);
         }
+
+        [TestMethod]
+        [DataRow(2)]
+        public void UpdateTicket_TitleTooShort_DoesNotUpdateATicket(int id)
+        {
+            Ticket ticket = ticketBLL.GetTicket(id);
+            ticket.Title = "One";
+
+            bool errorThrown = false;
+
+            try
+            {
+                ticketBLL.UpdateTicket(ticket);
+            }
+            catch (Exception ex)
+            {
+                errorThrown = true;
+            }
+
+            Assert.AreEqual(true, errorThrown);
+        }
     }
 }
