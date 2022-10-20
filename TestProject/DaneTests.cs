@@ -57,9 +57,9 @@ namespace TestProject
             var data = new List<Ticket>
             {
                 new Ticket {Id = 1, Title = "Add Olives", Body = "Add Olives to the pizza", RequiredHours = 5, Completed = false },
-                new Ticket {Id = 1, Title = "Add Pineapples", Body = "Add Pineapples to the pizza", RequiredHours = 4, Completed = true },
-                new Ticket {Id = 1, Title = "Add Red Peppers", Body = "Add Red Peppers to the pizza", RequiredHours = 3, Completed = false },
-                new Ticket {Id = 1, Title = "Add Ham", Body = "Add Ham to the pizza", RequiredHours = 2, Completed = false }
+                new Ticket {Id = 2, Title = "Add Pineapples", Body = "Add Pineapples to the pizza", RequiredHours = 4, Completed = true },
+                new Ticket {Id = 3, Title = "Add Red Peppers", Body = "Add Red Peppers to the pizza", RequiredHours = 3, Completed = false },
+                new Ticket {Id = 4, Title = "Add Ham", Body = "Add Ham to the pizza", RequiredHours = 2, Completed = false }
             }.AsQueryable();
 
             var mockDbSet = new Mock<DbSet<Ticket>>();
@@ -121,6 +121,21 @@ namespace TestProject
             }
             
             Assert.IsNull(ticket);
+        }
+
+        [TestMethod]
+        [DataRow(2)]
+        public void UpdateTicket_ValidInputs_UpdatesATicket(int id)
+        {
+            Ticket ticket = ticketBLL.GetTicket(id);
+            string originalBody = ticket.Body;  
+            ticket.Body = "Some people don't like pineapples";
+
+            ticketBLL.UpdateTicket(ticket);
+
+            Ticket ticket2 = ticketBLL.GetTicket(id);
+
+            Assert.AreNotEqual(originalBody, ticket2.Body);
         }
     }
 }
