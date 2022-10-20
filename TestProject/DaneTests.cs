@@ -104,5 +104,23 @@ namespace TestProject
 
             Assert.AreEqual(id, ticket.Id);
         }
+
+        [TestMethod]
+        [DataRow(77)]
+        public void GetTicket_InvalidInputs_DoesNotReturnATicket(int id)
+        {
+            Ticket ticket;
+
+            try
+            { 
+               ticket = ticketBLL.GetTicket(id);
+            }
+            catch (Exception ex)
+            {
+                ticket = null;
+            }
+            
+            Assert.IsNull(ticket);
+        }
     }
 }
