@@ -26,30 +26,7 @@ namespace TestProject
         {
             CreateMockTickets();
             CreateMockProjects();
-            //var userData = new List<ApplicationUser>
-            //{
-            //    new ApplicationUser {Id = "one", UserName = "Superman"},
-            //    new ApplicationUser {Id = "two", UserName = "Batman"},
-            //    new ApplicationUser {Id = "three", UserName = "Green Lantern"},
-            //    new ApplicationUser {Id = "one", UserName = "The Flash"}
-            //}.AsQueryable();
-
-            //var mockUserDbSet = new Mock<DbSet<ApplicationUser>>();
-
-            //mockUserDbSet.As<IQueryable<ApplicationUser>>().Setup(m => m.Provider).Returns(userData.Provider);
-            //mockUserDbSet.As<IQueryable<ApplicationUser>>().Setup(m => m.Expression).Returns(userData.Expression);
-            //mockUserDbSet.As<IQueryable<ApplicationUser>>().Setup(m => m.ElementType).Returns(userData.ElementType);
-            //mockUserDbSet.As<IQueryable<ApplicationUser>>().Setup(m => m.GetEnumerator()).Returns(userData.GetEnumerator);
-
-            //var mockContext = new Mock<ApplicationDbContext>();
-            //mockContext.Setup(u => u.Users).Returns(mockUserDbSet.Object);
-
-
-
-
-
-
-            
+            CreateMockUsers();
         }
 
         public void CreateMockTickets()
@@ -75,6 +52,29 @@ namespace TestProject
             ticketBLL = new TicketBusinessLogic(new TicketRepository(mockContext.Object));
         }
 
+        public void CreateMockTicketsTwo()
+        {
+            var data = new List<Ticket>
+            {
+                new Ticket {Id = 1, Title = "Add Olives", Body = "Add Olives to the pizza", RequiredHours = 5, Completed = false },
+                new Ticket {Id = 2, Title = "Add Pineapples", Body = "Add Pineapples to the pizza", RequiredHours = 4, Completed = true },
+                new Ticket {Id = 3, Title = "Add Red Peppers", Body = "Add Red Peppers to the pizza", RequiredHours = 3, Completed = false },
+                new Ticket {Id = 4, Title = "Add Ham", Body = "Add Ham to the pizza", RequiredHours = 2, Completed = false }
+            }.AsQueryable();
+
+            var mockDbSet = new Mock<DbSet<Ticket>>();
+            
+            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(data.Provider);
+            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(data.Expression);
+            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator);
+
+            var mockContext = new Mock<ApplicationDbContext>();
+            mockContext.Setup(t => t.Tickets).Returns(mockDbSet.Object);
+            
+            ticketBLL = new TicketBusinessLogic(new TicketRepository(mockContext.Object));
+        }
+
         public void CreateMockProjects()
         {
             var data = new List<Project>
@@ -94,6 +94,22 @@ namespace TestProject
             mockContext.Setup(c => c.Projects).Returns(mockDbSet.Object);
 
             projectBLL = new ProjectBusinessLogicLayer(new ProjectRepository(mockContext.Object));
+        }
+
+        public void CreateMockUsers()
+        {
+            var userData = new List<ApplicationUser>
+            {
+                new ApplicationUser {Id = "one", UserName = "Superman"},
+                new ApplicationUser {Id = "two", UserName = "Batman"},
+                new ApplicationUser {Id = "three", UserName = "Green Lantern"},
+                new ApplicationUser {Id = "one", UserName = "The Flash"}
+            }.AsQueryable();
+
+            var mockUserDbSet = new Mock<FakeUserManager>();
+            mockUserDbSet.Setup(x => x.Users).Returns(userData);
+
+            userManager = mockUserDbSet.Object;
         }
 
         [TestMethod]
@@ -157,6 +173,101 @@ namespace TestProject
             }
 
             Assert.AreEqual(true, errorThrown);
+        }
+
+        [TestMethod]
+        [DataRow(1)]
+        public void Add_ValidTicket_AddATicket(int projectId)
+        {
+            // The idea for this method is taken from
+            // https://learn.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN
+            // I needed to set up a context and test it directly to see if
+            // it had Verified the Add
+            var mockDbSet = new Mock<DbSet<Ticket>>();
+
+            var mockContext = new Mock<ApplicationDbContext>();
+            mockContext.Setup(m => m.Tickets).Returns(mockDbSet.Object);
+
+            Project project = projectBLL.Get(projectId);
+            Ticket ticket = new Ticket();
+
+            ticket.Id = 5;
+            ticket.Title = "Add Shrimp";
+            ticket.Body = "Add Shrimp to pizza";
+            ticket.RequiredHours = 2;
+            ticket.TicketPriority = Ticket.Priority.High;
+            ticket.Completed = false;
+            ticket.Project = project;
+
+            TicketBusinessLogic myTicketBLL = new TicketBusinessLogic(new TicketRepository(mockContext.Object));
+
+            myTicketBLL.Add(ticket);
+
+            mockDbSet.Verify(m => m.Add(It.IsAny<Ticket>()), Times.Once());
+        }
+
+        [TestMethod]
+        [DataRow(1)]
+        public void SaveTicket_ValidTicket_SaveATicket(int projectId)
+        {
+            Project project = projectBLL.Get(projectId);
+            Ticket ticket = new Ticket();
+
+            ticket.Id = 5;
+            ticket.Title = "Add Shrimp";
+            ticket.Body = "Add Shrimp to pizza";
+            ticket.RequiredHours = 2;
+            ticket.TicketPriority = Ticket.Priority.High;
+            ticket.Completed = false;
+            ticket.Project = project;
+
+            ticketBLL.Add(ticket);
+            ticketBLL.SaveTicket();
+
+            Ticket newTicket = ticketBLL.GetTicket(5);
+
+            Assert.AreEqual(5, newTicket.Id);
+            Assert.AreEqual(ticket.Title, newTicket.Title);
+            Assert.AreEqual(ticket.Body, newTicket.Body);
+            Assert.AreEqual(ticket.RequiredHours, newTicket.RequiredHours);
+            Assert.AreEqual(ticket.TicketPriority, newTicket.TicketPriority);
+            Assert.AreEqual(ticket.Completed, newTicket.Completed);
+            Assert.AreEqual(ticket.Owner, newTicket.Owner);
+            Assert.AreEqual(ticket.Project, newTicket.Project);
+        }
+
+        [TestMethod]
+        public void GetAllTickets_ValidInputs_ReturnAllTickets()
+        {
+            List<Ticket> tickets = ticketBLL.GetAllTickets();
+
+            Assert.AreEqual(4, tickets.Count);
+        }
+
+        [TestMethod]
+        public void DeleteTicket_ValidInputs_DeleteATicket()
+        {
+            Ticket ticket = ticketBLL.GetTicket(2);
+            ticketBLL.DeleteTicket(ticket);
+
+            List<Ticket> tickets = ticketBLL.GetAllTickets();
+            Assert.AreEqual(3, tickets.Count);
+        }
+    }
+
+    public class FakeUserManager : UserManager<ApplicationUser>
+    {
+        public FakeUserManager()
+            : base(new Mock<IUserStore<ApplicationUser>>().Object,
+                new Mock<IOptions<IdentityOptions>>().Object,
+                new Mock<IPasswordHasher<ApplicationUser>>().Object,
+                new IUserValidator<ApplicationUser>[0],
+                new IPasswordValidator<ApplicationUser>[0],
+                new Mock<ILookupNormalizer>().Object,
+                new Mock<IdentityErrorDescriber>().Object,
+                new Mock<IServiceProvider>().Object,
+                new Mock<ILogger<UserManager<ApplicationUser>>>().Object)
+        {
         }
     }
 }
