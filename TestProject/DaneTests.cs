@@ -159,7 +159,7 @@ namespace TestProject
         public void UpdateTicket_TitleTooShort_DoesNotUpdateATicket(int id)
         {
             Ticket ticket = ticketBLL.GetTicket(id);
-            ticket.Title = "One";
+            ticket.Title = "O";
 
             bool errorThrown = false;
 
@@ -210,10 +210,18 @@ namespace TestProject
         [DataRow(1)]
         public void SaveTicket_ValidTicket_SaveATicket(int projectId)
         {
+            // The idea for this method is taken from
+            // https://learn.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN
+            // I needed to set up a context and test it directly 
+            var mockDbSet = new Mock<DbSet<Ticket>>();
+
+            var mockContext = new Mock<ApplicationDbContext>();
+            mockContext.Setup(m => m.Tickets).Returns(mockDbSet.Object);
+
             Project project = projectBLL.Get(projectId);
             Ticket ticket = new Ticket();
 
-            ticket.Id = 5;
+            ticket.Id = 1;
             ticket.Title = "Add Shrimp";
             ticket.Body = "Add Shrimp to pizza";
             ticket.RequiredHours = 2;
@@ -221,19 +229,12 @@ namespace TestProject
             ticket.Completed = false;
             ticket.Project = project;
 
-            ticketBLL.Add(ticket);
-            ticketBLL.SaveTicket();
+            TicketBusinessLogic myTicketBLL = new TicketBusinessLogic(new TicketRepository(mockContext.Object));
 
-            Ticket newTicket = ticketBLL.GetTicket(5);
+            myTicketBLL.Add(ticket);
+            myTicketBLL.SaveTicket();
 
-            Assert.AreEqual(5, newTicket.Id);
-            Assert.AreEqual(ticket.Title, newTicket.Title);
-            Assert.AreEqual(ticket.Body, newTicket.Body);
-            Assert.AreEqual(ticket.RequiredHours, newTicket.RequiredHours);
-            Assert.AreEqual(ticket.TicketPriority, newTicket.TicketPriority);
-            Assert.AreEqual(ticket.Completed, newTicket.Completed);
-            Assert.AreEqual(ticket.Owner, newTicket.Owner);
-            Assert.AreEqual(ticket.Project, newTicket.Project);
+            mockContext.Verify(m => m.SaveChanges(), Times.Once());
         }
 
         [TestMethod]
@@ -249,8 +250,7 @@ namespace TestProject
         {
             // The idea for this method is taken from
             // https://learn.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN
-            // I needed to set up a context and test it directly to see if
-            // it had Verified the Add
+            // I needed to set up a context and test it directly 
             var mockDbSet = new Mock<DbSet<Ticket>>();
 
             var mockContext = new Mock<ApplicationDbContext>();
@@ -272,6 +272,33 @@ namespace TestProject
             myTicketBLL.DeleteTicket(ticket);
 
             mockDbSet.Verify(m => m.Remove(It.IsAny<Ticket>()), Times.Once());
+        }
+
+        [TestMethod]
+        [DataRow(1)]
+        [DataRow(2)]
+        public void DoesTicketExist_ValidTicket_ReturnsTrue(int id)
+        {
+            bool ticketExists = ticketBLL.DoesTicketExist(id);
+
+            Assert.IsTrue(ticketExists);
+        }
+
+        [TestMethod]
+        [DataRow(7)]
+        [DataRow(8)]
+        public void DoesTicketExist_InvalidTicket_ReturnsFalse(int id)
+        {
+            bool ticketExists = ticketBLL.DoesTicketExist(id);
+
+            Assert.IsFalse(ticketExists);
+        }
+
+        [TestMethod]
+        [DataRow(1)]
+        public void GetAsync_ValidTicket_GetsATicket(int id)
+        {
+
         }
     }
 
