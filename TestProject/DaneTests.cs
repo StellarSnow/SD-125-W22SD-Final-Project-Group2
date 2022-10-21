@@ -16,17 +16,15 @@ using Microsoft.Extensions.Logging;
 namespace TestProject
 {
     [TestClass]
-    public class DaneTests
+    public class DaneTestsTicketBusinessLogic
     {
         private TicketBusinessLogic ticketBLL;
-        private UserManager<ApplicationUser> userManager;
         private ProjectBusinessLogicLayer projectBLL;
 
-        public DaneTests()
+        public DaneTestsTicketBusinessLogic()
         {
             CreateMockTickets();
             CreateMockProjects();
-            CreateMockUsers();
         }
 
         public void CreateMockTickets()
@@ -94,22 +92,6 @@ namespace TestProject
             mockContext.Setup(c => c.Projects).Returns(mockDbSet.Object);
 
             projectBLL = new ProjectBusinessLogicLayer(new ProjectRepository(mockContext.Object));
-        }
-
-        public void CreateMockUsers()
-        {
-            var userData = new List<ApplicationUser>
-            {
-                new ApplicationUser {Id = "one", UserName = "Superman"},
-                new ApplicationUser {Id = "two", UserName = "Batman"},
-                new ApplicationUser {Id = "three", UserName = "Green Lantern"},
-                new ApplicationUser {Id = "one", UserName = "The Flash"}
-            }.AsQueryable();
-
-            var mockUserDbSet = new Mock<FakeUserManager>();
-            mockUserDbSet.Setup(x => x.Users).Returns(userData);
-
-            userManager = mockUserDbSet.Object;
         }
 
         [TestMethod]
@@ -292,29 +274,6 @@ namespace TestProject
             bool ticketExists = ticketBLL.DoesTicketExist(id);
 
             Assert.IsFalse(ticketExists);
-        }
-
-        [TestMethod]
-        [DataRow(1)]
-        public void GetAsync_ValidTicket_GetsATicket(int id)
-        {
-
-        }
-    }
-
-    public class FakeUserManager : UserManager<ApplicationUser>
-    {
-        public FakeUserManager()
-            : base(new Mock<IUserStore<ApplicationUser>>().Object,
-                new Mock<IOptions<IdentityOptions>>().Object,
-                new Mock<IPasswordHasher<ApplicationUser>>().Object,
-                new IUserValidator<ApplicationUser>[0],
-                new IPasswordValidator<ApplicationUser>[0],
-                new Mock<ILookupNormalizer>().Object,
-                new Mock<IdentityErrorDescriber>().Object,
-                new Mock<IServiceProvider>().Object,
-                new Mock<ILogger<UserManager<ApplicationUser>>>().Object)
-        {
         }
     }
 }
