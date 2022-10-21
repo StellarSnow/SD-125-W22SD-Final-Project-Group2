@@ -247,11 +247,31 @@ namespace TestProject
         [TestMethod]
         public void DeleteTicket_ValidInputs_DeleteATicket()
         {
-            Ticket ticket = ticketBLL.GetTicket(2);
-            ticketBLL.DeleteTicket(ticket);
+            // The idea for this method is taken from
+            // https://learn.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN
+            // I needed to set up a context and test it directly to see if
+            // it had Verified the Add
+            var mockDbSet = new Mock<DbSet<Ticket>>();
 
-            List<Ticket> tickets = ticketBLL.GetAllTickets();
-            Assert.AreEqual(3, tickets.Count);
+            var mockContext = new Mock<ApplicationDbContext>();
+            mockContext.Setup(m => m.Tickets).Returns(mockDbSet.Object);
+
+            Project project = projectBLL.Get(1);
+            Ticket ticket = new Ticket();
+
+            ticket.Id = 1;
+            ticket.Title = "Add Shrimp";
+            ticket.Body = "Add Shrimp to pizza";
+            ticket.RequiredHours = 2;
+            ticket.TicketPriority = Ticket.Priority.High;
+            ticket.Completed = false;
+            ticket.Project = project;
+
+            TicketBusinessLogic myTicketBLL = new TicketBusinessLogic(new TicketRepository(mockContext.Object));
+
+            myTicketBLL.DeleteTicket(ticket);
+
+            mockDbSet.Verify(m => m.Remove(It.IsAny<Ticket>()), Times.Once());
         }
     }
 
