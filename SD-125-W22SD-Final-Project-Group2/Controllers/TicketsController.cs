@@ -195,7 +195,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 {
                     Comment newComment = new Comment();
                     string userName = User.Identity.Name;
-                    ApplicationUser user = _userBLL.GetUserByUserName(userName);
+                    ApplicationUser user = await _userBLL.GetUserByUserName(userName);
                     Ticket ticket = _ticketBLL.GetTicket(TaskId);
 
                     newComment.CreatedBy = user;
@@ -246,7 +246,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 {
                     TicketWatcher newTickWatch = new TicketWatcher();
                     string userName = User.Identity.Name;
-                    ApplicationUser user = _userBLL.GetUserByUserName(userName);
+                    ApplicationUser user = await _userBLL.GetUserByUserName(userName);
                     Ticket ticket = _ticketBLL.GetTicket(id);
 
                     newTickWatch.Ticket = ticket;
@@ -275,7 +275,7 @@ namespace SD_340_W22SD_Final_Project_Group6.Controllers
                 {
                     
                     string userName = User.Identity.Name;
-                    ApplicationUser user = _userBLL.GetUserByUserName(userName);
+                    ApplicationUser user = await _userBLL.GetUserByUserName(userName);
                     Ticket ticket = _ticketBLL.GetTicket(id);
                     
                     TicketWatcher currTickWatch = _ticketWatcherBLL.GetTicketWatcherByTicketAndUserName(ticket, user);

@@ -23,7 +23,7 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
 
         public ApplicationUser GetByPredicate(Func<ApplicationUser, bool> predicate)
         {
-            return _db.Users.First(predicate);
+            return _userManager.Users.Where(predicate).FirstOrDefault();
         }
 
         public async Task<List<ApplicationUser>> GetAllAsync()

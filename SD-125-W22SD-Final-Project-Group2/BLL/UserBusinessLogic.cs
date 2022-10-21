@@ -14,12 +14,14 @@ namespace SD_340_W22SD_Final_Project_Group6.BLL
 
         public async Task<ApplicationUser> GetUserAsync(string id)
         {
-            return await _userRepository.GetAsync(id);
+            var abc = await _userRepository.GetAsync(id);
+
+            return abc;
         }
 
-        public ApplicationUser GetUserByUserName(string userName)
+        public async Task<ApplicationUser> GetUserByUserName(string userName)
         {
-            return _userRepository.GetByPredicate(u => u.UserName.Equals(userName));
+            return _userRepository.GetByPredicate(u => u.UserName == userName);
         }
 
         public async Task<List<ApplicationUser>> GetUsersWhoAreNotTheTicketOwnerAsync(ApplicationUser owner)
