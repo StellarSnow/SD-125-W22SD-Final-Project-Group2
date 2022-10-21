@@ -253,4 +253,61 @@ namespace TestProject
             Assert.IsFalse(ticketExists);
         }
     }
+
+    [TestClass]
+    public class DaneTestsTicketWatcherBusinessLogic
+    {
+        private TicketBusinessLogic ticketBLL;
+        private ProjectBusinessLogicLayer projectBLL;
+
+        public DaneTestsTicketWatcherBusinessLogic()
+        {
+            CreateMockTickets();
+            CreateMockProjects();
+        }
+
+        public void CreateMockTickets()
+        {
+            var data = new List<Ticket>
+            {
+                new Ticket {Id = 1, Title = "Add Olives", Body = "Add Olives to the pizza", RequiredHours = 5, Completed = false },
+                new Ticket {Id = 2, Title = "Add Pineapples", Body = "Add Pineapples to the pizza", RequiredHours = 4, Completed = true },
+                new Ticket {Id = 3, Title = "Add Red Peppers", Body = "Add Red Peppers to the pizza", RequiredHours = 3, Completed = false },
+                new Ticket {Id = 4, Title = "Add Ham", Body = "Add Ham to the pizza", RequiredHours = 2, Completed = false }
+            }.AsQueryable();
+
+            var mockDbSet = new Mock<DbSet<Ticket>>();
+
+            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(data.Provider);
+            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(data.Expression);
+            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator);
+
+            var mockContext = new Mock<ApplicationDbContext>();
+            mockContext.Setup(t => t.Tickets).Returns(mockDbSet.Object);
+
+            ticketBLL = new TicketBusinessLogic(new TicketRepository(mockContext.Object));
+        }
+
+        public void CreateMockProjects()
+        {
+            var data = new List<Project>
+            {
+                new Project {Id = 1, ProjectName = "Make Pizza"},
+                new Project {Id = 2, ProjectName = "The Batman Project"}
+            }.AsQueryable();
+
+            var mockDbSet = new Mock<DbSet<Project>>();
+
+            mockDbSet.As<IQueryable<Project>>().Setup(m => m.Provider).Returns(data.Provider);
+            mockDbSet.As<IQueryable<Project>>().Setup(m => m.Expression).Returns(data.Expression);
+            mockDbSet.As<IQueryable<Project>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            mockDbSet.As<IQueryable<Project>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator);
+
+            var mockContext = new Mock<ApplicationDbContext>();
+            mockContext.Setup(c => c.Projects).Returns(mockDbSet.Object);
+
+            projectBLL = new ProjectBusinessLogicLayer(new ProjectRepository(mockContext.Object));
+        }
+    }
 }
