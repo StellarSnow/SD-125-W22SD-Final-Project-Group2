@@ -263,6 +263,8 @@ namespace TestProject
         private Mock<ApplicationDbContext> mockContext;
         private Mock<DbSet<TicketWatcher>> mockTicketWatcherDbSet;
         private TicketWatcherBusinessLogic tickeWatchertBLL;
+        private CommentBusinessLogic commentBLL;
+        private Mock<DbSet<Comment>>  mockCommentDbSet;
 
         public DaneTestsTicketWatcherBusinessLogic()
         {
@@ -270,6 +272,7 @@ namespace TestProject
             CreateMockTickets();
             CreateMockUsers();
             CreateMockTicketWatchers();
+            CreateMockComments();
         }
 
         public void CreateMockTickets()
@@ -321,6 +324,13 @@ namespace TestProject
             mockTicketWatcherDbSet = new Mock<DbSet<TicketWatcher>>();
             mockContext.Setup(m => m.TicketWatchers).Returns(mockTicketWatcherDbSet.Object);
             tickeWatchertBLL = new TicketWatcherBusinessLogic(new TicketWatcherRepository(mockContext.Object));
+        }
+
+        public void CreateMockComments()
+        {
+            mockCommentDbSet = new Mock<DbSet<Comment>>();
+            mockContext.Setup(m => m.Comments).Returns(mockCommentDbSet.Object);
+            commentBLL = new CommentBusinessLogic(new CommentRepository(mockContext.Object));
         }
 
         [TestMethod]
@@ -388,6 +398,23 @@ namespace TestProject
             tickeWatchertBLL.DeleteTicket(ticketWatcher);
 
             mockTicketWatcherDbSet.Verify(m => m.Remove(It.IsAny<TicketWatcher>()), Times.Once());
+        }
+
+        [TestMethod]
+        public void AddComment_ValidInputs_AddsAComment()
+        {
+            Comment comment = new Comment();
+
+            comment.Id = 1;
+            comment.Description = "This is a comment";
+            comment.CreatedBy = userManager.Users.First(u => u.Id.Equals("one"));
+            comment.Ticket = new Ticket();
+
+            tickeWatchertBLL.AddTicketWatcher(watcher);
+
+            // The idea for using the Verify method is taken from
+            // https://learn.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN
+            mockTicketWatcherDbSet.Verify(m => m.Add(watcher), Times.Once());
         }
     }
 
