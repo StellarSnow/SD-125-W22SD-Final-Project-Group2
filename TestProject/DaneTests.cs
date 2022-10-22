@@ -311,7 +311,7 @@ namespace TestProject
             fakeUserManager.As<IQueryable<ApplicationUser>>().Setup(m => m.ElementType).Returns(userData.ElementType);
             fakeUserManager.As<IQueryable<ApplicationUser>>().Setup(m => m.GetEnumerator()).Returns(userData.GetEnumerator);
 
-            fakeUserManager.Setup(x => x.Users).Returns(userData);
+            fakeUserManager.Setup(u => u.Users).Returns(userData);
 
             userManager = fakeUserManager.Object;
         }
@@ -326,9 +326,6 @@ namespace TestProject
         [TestMethod]
         public void AddTicketWatcher_ValidInputs_AddsATicketWatcher()
         {
-            // The idea for this method is taken from
-            // https://learn.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN
-            // I needed to set up a context and test it directly 
             TicketWatcher watcher = new TicketWatcher();
 
             watcher.Id = 1;
@@ -337,6 +334,8 @@ namespace TestProject
 
             tickeWatchertBLL.AddTicketWatcher(watcher);
 
+            // The idea for using the Verify method is taken from
+            // https://learn.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN
             mockTicketWatcherDbSet.Verify(m => m.Add(watcher), Times.Once());
         }
     }
