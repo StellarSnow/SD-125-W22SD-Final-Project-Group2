@@ -15,7 +15,7 @@ namespace SD_340_W22SD_Final_Project_Group6.DAL
 
         public void Add(Ticket entity)
         {
-            _db.Add(entity);
+            _db.Tickets.Add(entity);
         }
 
         public Ticket Get(int id)
