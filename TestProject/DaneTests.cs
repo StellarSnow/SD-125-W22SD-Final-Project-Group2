@@ -416,6 +416,24 @@ namespace TestProject
             // https://learn.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN
             mockCommentDbSet.Verify(m => m.Add(comment), Times.Once());
         }
+
+        [TestMethod]
+        public void SaveComment_ValidInputs_AddsAComment()
+        {
+            Comment comment = new Comment();
+
+            comment.Id = 2;
+            comment.Description = "This is a comment";
+            comment.CreatedBy = userManager.Users.First(u => u.Id.Equals("one"));
+            comment.Ticket = new Ticket();
+
+            commentBLL.AddComment(comment);
+            commentBLL.SaveComment();
+
+            // The idea for using the Verify method is taken from
+            // https://learn.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN
+            mockContext.Verify(m => m.SaveChanges(), Times.Once());
+        }
     }
 
     public class FakeUserManager : UserManager<ApplicationUser>
