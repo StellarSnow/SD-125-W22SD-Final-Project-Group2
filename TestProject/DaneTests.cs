@@ -258,12 +258,18 @@ namespace TestProject
     public class DaneTestsTicketWatcherBusinessLogic
     {
         private TicketBusinessLogic ticketBLL;
-        private ProjectBusinessLogicLayer projectBLL;
+        private UserManager<ApplicationUser> userManager;
+        private Mock<DbSet<Ticket>> mockTicketDbSet;
+        private Mock<ApplicationDbContext> mockContext;
+        private Mock<DbSet<TicketWatcher>> mockTicketWatcherDbSet;
+        private TicketWatcherBusinessLogic tickeWatchertBLL;
 
         public DaneTestsTicketWatcherBusinessLogic()
         {
+            mockContext = new Mock<ApplicationDbContext>();
             CreateMockTickets();
-            CreateMockProjects();
+            CreateMockUsers();
+            CreateMockTicketWatchers();
         }
 
         public void CreateMockTickets()
@@ -276,38 +282,78 @@ namespace TestProject
                 new Ticket {Id = 4, Title = "Add Ham", Body = "Add Ham to the pizza", RequiredHours = 2, Completed = false }
             }.AsQueryable();
 
-            var mockDbSet = new Mock<DbSet<Ticket>>();
+            mockTicketDbSet = new Mock<DbSet<Ticket>>();
 
-            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(data.Provider);
-            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(data.Expression);
-            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(data.ElementType);
-            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator);
+            mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(data.Provider);
+            mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(data.Expression);
+            mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator);
 
-            var mockContext = new Mock<ApplicationDbContext>();
-            mockContext.Setup(t => t.Tickets).Returns(mockDbSet.Object);
+            mockContext.Setup(t => t.Tickets).Returns(mockTicketDbSet.Object);
 
             ticketBLL = new TicketBusinessLogic(new TicketRepository(mockContext.Object));
         }
 
-        public void CreateMockProjects()
+        public void CreateMockUsers()
         {
-            var data = new List<Project>
+            var userData = new List<ApplicationUser>
             {
-                new Project {Id = 1, ProjectName = "Make Pizza"},
-                new Project {Id = 2, ProjectName = "The Batman Project"}
+                new ApplicationUser {Id = "one", UserName = "Superman"},
+                new ApplicationUser {Id = "two", UserName = "Batman"},
+                new ApplicationUser {Id = "three", UserName = "Green Lantern"},
+                new ApplicationUser {Id = "one", UserName = "The Flash"}
             }.AsQueryable();
 
-            var mockDbSet = new Mock<DbSet<Project>>();
+            var fakeUserManager = new Mock<FakeUserManager>();
 
-            mockDbSet.As<IQueryable<Project>>().Setup(m => m.Provider).Returns(data.Provider);
-            mockDbSet.As<IQueryable<Project>>().Setup(m => m.Expression).Returns(data.Expression);
-            mockDbSet.As<IQueryable<Project>>().Setup(m => m.ElementType).Returns(data.ElementType);
-            mockDbSet.As<IQueryable<Project>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator);
+            fakeUserManager.As<IQueryable<ApplicationUser>>().Setup(m => m.Provider).Returns(userData.Provider);
+            fakeUserManager.As<IQueryable<ApplicationUser>>().Setup(m => m.Expression).Returns(userData.Expression);
+            fakeUserManager.As<IQueryable<ApplicationUser>>().Setup(m => m.ElementType).Returns(userData.ElementType);
+            fakeUserManager.As<IQueryable<ApplicationUser>>().Setup(m => m.GetEnumerator()).Returns(userData.GetEnumerator);
 
-            var mockContext = new Mock<ApplicationDbContext>();
-            mockContext.Setup(c => c.Projects).Returns(mockDbSet.Object);
+            fakeUserManager.Setup(x => x.Users).Returns(userData);
 
-            projectBLL = new ProjectBusinessLogicLayer(new ProjectRepository(mockContext.Object));
+            userManager = fakeUserManager.Object;
+        }
+
+        public void CreateMockTicketWatchers()
+        {
+            mockTicketWatcherDbSet = new Mock<DbSet<TicketWatcher>>();
+            mockContext.Setup(m => m.TicketWatchers).Returns(mockTicketWatcherDbSet.Object);
+            tickeWatchertBLL = new TicketWatcherBusinessLogic(new TicketWatcherRepository(mockContext.Object));
+        }
+
+        [TestMethod]
+        public void AddTicketWatcher_ValidInputs_AddsATicketWatcher()
+        {
+            // The idea for this method is taken from
+            // https://learn.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN
+            // I needed to set up a context and test it directly 
+            TicketWatcher watcher = new TicketWatcher();
+
+            watcher.Id = 1;
+            watcher.Watcher = userManager.Users.First(u => u.Id.Equals("one"));
+            watcher.Ticket = new Ticket();
+
+            tickeWatchertBLL.AddTicketWatcher(watcher);
+
+            mockTicketWatcherDbSet.Verify(m => m.Add(watcher), Times.Once());
+        }
+    }
+
+    public class FakeUserManager : UserManager<ApplicationUser>
+    {
+        public FakeUserManager()
+            : base(new Mock<IUserStore<ApplicationUser>>().Object,
+                new Mock<IOptions<IdentityOptions>>().Object,
+                new Mock<IPasswordHasher<ApplicationUser>>().Object,
+                new IUserValidator<ApplicationUser>[0],
+                new IPasswordValidator<ApplicationUser>[0],
+                new Mock<ILookupNormalizer>().Object,
+                new Mock<IdentityErrorDescriber>().Object,
+                new Mock<IServiceProvider>().Object,
+                new Mock<ILogger<UserManager<ApplicationUser>>>().Object)
+        {
         }
     }
 }
