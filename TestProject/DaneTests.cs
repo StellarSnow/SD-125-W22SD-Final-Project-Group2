@@ -20,10 +20,15 @@ namespace TestProject
     {
         private TicketBusinessLogic ticketBLL;
         private ProjectBusinessLogicLayer projectBLL;
+        private Mock<DbSet<Ticket>> mockTicketDbSet;
+        private Mock<ApplicationDbContext> mockContext;
+        private UserManager<ApplicationUser> userManager;
 
         public DaneTestsTicketBusinessLogic()
         {
+            mockContext = new Mock<ApplicationDbContext>();
             CreateMockTickets();
+            CreateMockUsers();
             CreateMockProjects();
         }
 
@@ -37,17 +42,38 @@ namespace TestProject
                 new Ticket {Id = 4, Title = "Add Ham", Body = "Add Ham to the pizza", RequiredHours = 2, Completed = false }
             }.AsQueryable();
 
-            var mockDbSet = new Mock<DbSet<Ticket>>();
+            mockTicketDbSet = new Mock<DbSet<Ticket>>();
 
-            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(data.Provider);
-            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(data.Expression);
-            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(data.ElementType);
-            mockDbSet.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator);
+            mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.Provider).Returns(data.Provider);
+            mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.Expression).Returns(data.Expression);
+            mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            mockTicketDbSet.As<IQueryable<Ticket>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator);
 
-            var mockContext = new Mock<ApplicationDbContext>();
-            mockContext.Setup(t => t.Tickets).Returns(mockDbSet.Object);
+            mockContext.Setup(t => t.Tickets).Returns(mockTicketDbSet.Object);
 
             ticketBLL = new TicketBusinessLogic(new TicketRepository(mockContext.Object));
+        }
+
+        public void CreateMockUsers()
+        {
+            var userData = new List<ApplicationUser>
+            {
+                new ApplicationUser {Id = "one", UserName = "Superman"},
+                new ApplicationUser {Id = "two", UserName = "Batman"},
+                new ApplicationUser {Id = "three", UserName = "Green Lantern"},
+                new ApplicationUser {Id = "four", UserName = "The Flash"}
+            }.AsQueryable();
+
+            var fakeUserManager = new Mock<FakeUserManager>();
+
+            fakeUserManager.As<IQueryable<ApplicationUser>>().Setup(m => m.Provider).Returns(userData.Provider);
+            fakeUserManager.As<IQueryable<ApplicationUser>>().Setup(m => m.Expression).Returns(userData.Expression);
+            fakeUserManager.As<IQueryable<ApplicationUser>>().Setup(m => m.ElementType).Returns(userData.ElementType);
+            fakeUserManager.As<IQueryable<ApplicationUser>>().Setup(m => m.GetEnumerator()).Returns(userData.GetEnumerator);
+
+            fakeUserManager.Setup(u => u.Users).Returns(userData);
+
+            userManager = fakeUserManager.Object;
         }
 
         public void CreateMockProjects()
@@ -138,15 +164,6 @@ namespace TestProject
         [DataRow(1)]
         public void Add_ValidTicket_AddATicket(int projectId)
         {
-            // The idea for this method is taken from
-            // https://learn.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN
-            // I needed to set up a context and test it directly to see if
-            // it had Verified the Add
-            var mockDbSet = new Mock<DbSet<Ticket>>();
-
-            var mockContext = new Mock<ApplicationDbContext>();
-            mockContext.Setup(m => m.Tickets).Returns(mockDbSet.Object);
-
             Project project = projectBLL.Get(projectId);
             Ticket ticket = new Ticket();
 
@@ -157,12 +174,13 @@ namespace TestProject
             ticket.TicketPriority = Ticket.Priority.High;
             ticket.Completed = false;
             ticket.Project = project;
+            ticket.Owner = userManager.Users.First(u => u.Id.Equals("one"));
 
-            TicketBusinessLogic myTicketBLL = new TicketBusinessLogic(new TicketRepository(mockContext.Object));
+            ticketBLL.Add(ticket);
 
-            myTicketBLL.Add(ticket);
-
-            mockDbSet.Verify(m => m.Add(It.IsAny<Ticket>()), Times.Once());
+            // The idea for using the Verify method is taken from
+            // https://learn.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN
+            mockTicketDbSet.Verify(m => m.Add(It.IsAny<Ticket>()), Times.Once());
         }
 
         [TestMethod]
