@@ -301,7 +301,7 @@ namespace TestProject
                 new ApplicationUser {Id = "one", UserName = "Superman"},
                 new ApplicationUser {Id = "two", UserName = "Batman"},
                 new ApplicationUser {Id = "three", UserName = "Green Lantern"},
-                new ApplicationUser {Id = "one", UserName = "The Flash"}
+                new ApplicationUser {Id = "four", UserName = "The Flash"}
             }.AsQueryable();
 
             var fakeUserManager = new Mock<FakeUserManager>();
@@ -337,6 +337,57 @@ namespace TestProject
             // The idea for using the Verify method is taken from
             // https://learn.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN
             mockTicketWatcherDbSet.Verify(m => m.Add(watcher), Times.Once());
+        }
+
+        [TestMethod]
+        [DataRow(1, "one")]
+        [DataRow(2, "two")]
+        public void SaveTicketWatcher_ValidInputs_SavesATicketWatcher(int id, string userId)
+        {
+            TicketWatcher watcher = new TicketWatcher();
+            Ticket ticket = new Ticket();
+            ticket.Id = id;
+            ticket.Title = "Test";
+            ticket.Body = "This is a test";
+
+            watcher.Id = id;
+            watcher.Watcher = userManager.Users.First(u => u.Id.Equals(userId));
+            watcher.Ticket = ticket;
+
+            tickeWatchertBLL.AddTicketWatcher(watcher);
+            tickeWatchertBLL.SaveTicketWatcher();
+
+            // The idea for using the Verify method is taken from
+            // https://learn.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN
+            mockContext.Verify(m => m.SaveChanges(), Times.Once());
+        }
+
+        [TestMethod]
+        [DataRow(3, "three")]
+        public void GetTicketWatcherByTicketAndUserName_ValidInputs_SavesATicketWatcher(int id, string userId)
+        {
+            SaveTicketWatcher_ValidInputs_SavesATicketWatcher(id, userId);
+            
+            Ticket ticket = ticketBLL.GetTicket(id);
+            ApplicationUser user = userManager.Users.First(u => u.Id.Equals(userId));
+            TicketWatcher watcher =
+            tickeWatchertBLL.GetTicketWatcherByTicketAndUserName(ticket, user);
+
+            Assert.IsNotNull(watcher);
+        }
+
+        [TestMethod]
+        public void DeleteTicket_ValidInputs_DeletesATicketWatcher()
+        {
+            TicketWatcher ticketWatcher = new TicketWatcher();
+
+            ticketWatcher.Id = 7;
+            ticketWatcher.Watcher = userManager.Users.First(u => u.Id.Equals("one"));
+            ticketWatcher.Ticket = new Ticket();
+
+            tickeWatchertBLL.DeleteTicket(ticketWatcher);
+
+            mockTicketWatcherDbSet.Verify(m => m.Remove(It.IsAny<TicketWatcher>()), Times.Once());
         }
     }
 
