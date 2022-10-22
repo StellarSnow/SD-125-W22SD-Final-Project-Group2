@@ -410,11 +410,11 @@ namespace TestProject
             comment.CreatedBy = userManager.Users.First(u => u.Id.Equals("one"));
             comment.Ticket = new Ticket();
 
-            tickeWatchertBLL.AddTicketWatcher(watcher);
+            commentBLL.AddComment(comment);
 
             // The idea for using the Verify method is taken from
             // https://learn.microsoft.com/en-us/ef/ef6/fundamentals/testing/mocking?redirectedfrom=MSDN
-            mockTicketWatcherDbSet.Verify(m => m.Add(watcher), Times.Once());
+            mockCommentDbSet.Verify(m => m.Add(comment), Times.Once());
         }
     }
 
